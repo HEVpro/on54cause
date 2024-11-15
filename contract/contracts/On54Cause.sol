@@ -45,7 +45,7 @@ contract On54Cause is Ownable {
     mapping(IERC20 => bool) public tokens;
 
     // charity -> token -> balance
-    mapping(address => mapping(address => uint256)) public charityBalances;
+    mapping(address => mapping(IERC20 => uint256)) public charityBalances;
 
     event EventCreated(Event eventDetails);
     event FundraisingCreated(
@@ -91,16 +91,25 @@ contract On54Cause is Ownable {
         return events[_id];
     }
 
-    function cancelEvent(bytes32 _event) public {
+    function cancelEvent(bytes32 _event, IERC20[] memory _tokens) public {
         require(
             msg.sender == events[_event].organiser,
             "User not allowed to cancel event"
         );
         require(events[_event].status == Status.OPEN, "Event is not open");
         events[_event].status = Status.CANCELLED;
-        emit EventCancelled(events[_event]);
 
-        // TODO: Logic to store funds for future events
+        TokenRaised[] memory tokenRaised = getEventTokensRaised(
+            _event,
+            _tokens
+        );
+
+        for (uint256 i = 0; i < tokenRaised.length; i++) {
+            charityBalances[msg.sender][tokenRaised[i].token] += tokenRaised[i]
+                .amount;
+        }
+
+        emit EventCancelled(events[_event]);
     }
 
     function getEventTokensRaised(
@@ -235,5 +244,19 @@ contract On54Cause is Ownable {
         _token.transferFrom(msg.sender, address(this), _amount);
         fundraisings[_fundraisingId].donations[_token] += _amount;
         emit DonationReceived(_fundraisingId, _amount, _token);
+    }
+
+    function getCharityBalance(
+        address _charity,
+        IERC20[] memory _tokens
+    ) public view returns (TokenRaised[] memory) {
+        TokenRaised[] memory tokenRaised = new TokenRaised[](_tokens.length);
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            tokenRaised[i] = TokenRaised(
+                _tokens[i],
+                charityBalances[_charity][_tokens[i]]
+            );
+        }
+        return tokenRaised;
     }
 }
