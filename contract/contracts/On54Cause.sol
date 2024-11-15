@@ -3,6 +3,7 @@ pragma solidity 0.8.27;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "hardhat/console.sol";
 
 contract On54Cause is Ownable {
     constructor() Ownable(msg.sender) {}
@@ -34,6 +35,11 @@ contract On54Cause is Ownable {
         bytes32 associatedEvent;
     }
 
+    struct TokenRaised {
+        IERC20 token;
+        uint256 amount;
+    }
+
     mapping(bytes32 => Fundraising) public fundraisings;
     mapping(bytes32 => Event) public events;
     mapping(IERC20 => bool) public tokens;
@@ -54,6 +60,7 @@ contract On54Cause is Ownable {
     event EventCancelled(Event eventDetails);
     event TokenWhitelisted(IERC20 token);
     event TokenBlacklisted(IERC20 token);
+    event DonationReceived(bytes32 fundraisingId, uint256 amount, IERC20 token);
 
     function createEvent(
         uint32 _date,
@@ -96,13 +103,58 @@ contract On54Cause is Ownable {
         // TODO: Logic to store funds for future events
     }
 
-    function completeEvent(bytes32 _event) public {
+    function getEventTokensRaised(
+        bytes32 _event,
+        IERC20[] memory _tokens
+    ) public view returns (TokenRaised[] memory) {
+        TokenRaised[] memory tokenRaised = new TokenRaised[](_tokens.length);
+        require(events[_event].organiser != address(0), "Event does not exist");
+        require(
+            events[_event].fundraisings.length > 0,
+            "No fundraisings for this event"
+        );
+
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            uint256 amount = 0;
+            for (uint256 j = 0; j < events[_event].fundraisings.length; j++) {
+                // Ensure that the fundraising ID is valid
+                bytes32 fundraisingId = events[_event].fundraisings[j];
+                require(
+                    fundraisings[fundraisingId].targetAmount > 0,
+                    "Invalid fundraising ID"
+                );
+                amount += fundraisings[fundraisingId].donations[_tokens[i]];
+            }
+            tokenRaised[i] = TokenRaised(_tokens[i], amount);
+        }
+        return tokenRaised;
+    }
+
+    function completeEvent(bytes32 _event, IERC20[] memory _tokens) public {
         require(
             msg.sender == events[_event].organiser,
             "User not allowed to complete event"
         );
         require(events[_event].status == Status.OPEN, "Event is not open");
-        events[_event].status = Status.COMPLETED;
+        require(
+            events[_event].fundraisings.length > 0,
+            "No fundraisings associated with this event"
+        );
+
+        TokenRaised[] memory tokenRaised = getEventTokensRaised(
+            _event,
+            _tokens
+        );
+
+        for (uint256 i = 0; i < tokenRaised.length; i++) {
+            require(
+                tokenRaised[i].token.transfer(
+                    events[_event].organiser,
+                    tokenRaised[i].amount
+                ),
+                "Token transfer failed"
+            );
+        }
 
         emit EventCompleted(events[_event]);
     }
@@ -128,6 +180,7 @@ contract On54Cause is Ownable {
             fundraisings[_fundraisingId].targetAmount == 0,
             "Fundraising already exists"
         );
+        events[_associatedEvent].fundraisings.push(_fundraisingId);
         Fundraising storage _fundraising = fundraisings[_fundraisingId];
         _fundraising.targetAmount = _targetAmount;
         _fundraising.associatedEvent = _associatedEvent;
@@ -181,5 +234,6 @@ contract On54Cause is Ownable {
         require(tokens[_token], "Token not whitelisted");
         _token.transferFrom(msg.sender, address(this), _amount);
         fundraisings[_fundraisingId].donations[_token] += _amount;
+        emit DonationReceived(_fundraisingId, _amount, _token);
     }
 }

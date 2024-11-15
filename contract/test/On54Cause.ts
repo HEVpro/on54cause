@@ -19,7 +19,8 @@ describe("On54Cause", function () {
   let eventIdThree: `0x${string}`;
   let fundraisingId: `0x${string}`;
   before(async function () {
-    const [, , , donor] = await hre.viem.getWalletClients();
+    const [owner, charity, fundraiser, donor] =
+      await hre.viem.getWalletClients();
     on54Cause = await hre.viem.deployContract("On54Cause");
     mockERC20 = await hre.viem.deployContract("MockERC20");
   });
@@ -34,7 +35,7 @@ describe("On54Cause", function () {
     });
 
     it("Should mint mockERC20", async function () {
-      const [, donor] = await hre.viem.getWalletClients();
+      const [, , , donor] = await hre.viem.getWalletClients();
       await mockERC20.write.mint([donor.account.address, 1000]);
     });
 
@@ -134,6 +135,20 @@ describe("On54Cause", function () {
           }
         )
       ).to.not.be.reverted;
+
+      expect(
+        await on54Cause.write.createEvent(
+          [
+            fundraisingLimitDate,
+            "Test Event 4",
+            "This is a test event 4",
+            "https://example.com/image4.png",
+          ],
+          {
+            account: charity.account,
+          }
+        )
+      ).to.not.be.reverted;
     });
 
     it("Should get event", async function () {
@@ -152,7 +167,7 @@ describe("On54Cause", function () {
       );
       eventIdThree = keccak256(
         encodeAbiParameters(parseAbiParameters("string,address"), [
-          "Test Event 3",
+          "Test Event 4",
           charity.account.address,
         ])
       );
@@ -163,10 +178,10 @@ describe("On54Cause", function () {
     });
 
     it("Should not be able to cancel event status if not organiser", async function () {
-      const [, , other] = await hre.viem.getWalletClients();
+      const [, , fundraiser] = await hre.viem.getWalletClients();
       await expect(
         on54Cause.write.cancelEvent([eventIdOne], {
-          account: other.account,
+          account: fundraiser.account,
         })
       ).to.be.reverted;
     });
@@ -187,17 +202,10 @@ describe("On54Cause", function () {
       ).to.be.reverted;
     });
 
-    it("Should be able to complete event", async function () {
-      const [, charity] = await hre.viem.getWalletClients();
-      await on54Cause.write.completeEvent([eventIdTwo], {
-        account: charity.account,
-      });
-    });
-
     it("Should not be able to complete event status if event is not open", async function () {
       const [, charity] = await hre.viem.getWalletClients();
       await expect(
-        on54Cause.write.completeEvent([eventIdTwo], {
+        on54Cause.write.completeEvent([eventIdTwo, [mockERC20.address]], {
           account: charity.account,
         })
       ).to.be.reverted;
@@ -269,7 +277,7 @@ describe("On54Cause", function () {
   });
   describe("Donations", function () {
     it("Should not allow donation if token is not whitelisted", async function () {
-      const [, donor] = await hre.viem.getWalletClients();
+      const [, , , donor] = await hre.viem.getWalletClients();
       await expect(
         on54Cause.write.donate([10, fundraisingId, CIRCLE_USDC_POLYGON_AMOY], {
           account: donor.account,
@@ -277,16 +285,41 @@ describe("On54Cause", function () {
       ).to.be.reverted;
     });
     it("Should allow allowance", async function () {
-      const [, donor] = await hre.viem.getWalletClients();
+      const [, , , donor] = await hre.viem.getWalletClients();
       await mockERC20.write.approve([on54Cause.address, 10], {
         account: donor.account,
       });
     });
     it("Should allow donation", async function () {
-      const [, donor] = await hre.viem.getWalletClients();
+      const [, , , donor] = await hre.viem.getWalletClients();
       await on54Cause.write.donate([10, fundraisingId, mockERC20.address], {
         account: donor.account,
       });
+    });
+    it("Should have received donation", async function () {
+      const donation = await mockERC20.read.balanceOf([on54Cause.address]);
+      expect(donation).to.equal(10n);
+    });
+    it("Should get event tokens raised", async function () {
+      const tokens = await on54Cause.read.getEventTokensRaised([
+        eventIdThree,
+        [mockERC20.address],
+      ]);
+      expect(tokens[0].token.toLowerCase()).to.equal(
+        mockERC20.address.toLowerCase()
+      );
+      expect(tokens[0].amount).to.equal(10n);
+    });
+    it("Should transfer funds to beneficiary", async function () {
+      const [, charity] = await hre.viem.getWalletClients();
+      await on54Cause.write.completeEvent([eventIdThree, [mockERC20.address]], {
+        account: charity.account,
+      });
+    });
+    it("Should have transferred funds to beneficiary", async function () {
+      const [, charity] = await hre.viem.getWalletClients();
+      const balance = await mockERC20.read.balanceOf([charity.account.address]);
+      expect(balance).to.equal(10n);
     });
   });
 });
