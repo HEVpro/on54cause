@@ -137,7 +137,7 @@ export default function AnimatedGridPattern({
   useEffect(() => {
     const interval = setInterval(() => {
       setColorIndex((prevIndex) => (prevIndex + 1) % colorHexValues.length);
-    }, 2500); // Change color every 1000ms
+    }, 1000); // Change color every 1000ms
 
     return () => clearInterval(interval);
   }, []);
@@ -166,7 +166,7 @@ export default function AnimatedGridPattern({
           <path
             d={`M.5 ${height}V.5H${width}`}
             fill="none"
-            stroke={randomColor}
+            stroke={"#ffffff"}
             strokeDasharray={strokeDasharray}
           />
         </pattern>
