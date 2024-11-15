@@ -3,7 +3,12 @@ pragma solidity 0.8.27;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "hardhat/console.sol";
+
+interface IChronicle {
+    function read() external view returns (uint256 value);
+}
 
 contract On54Cause is Ownable {
     constructor() Ownable(msg.sender) {}
@@ -28,6 +33,7 @@ contract On54Cause is Ownable {
     struct Fundraising {
         bytes32 id;
         uint256 targetAmount; // target amount in USD
+        uint256 amountRaised; // amount raised in USD
         mapping(IERC20 => uint256) donations;
         address beneficiary;
         address charity;
@@ -43,6 +49,7 @@ contract On54Cause is Ownable {
     mapping(bytes32 => Fundraising) public fundraisings;
     mapping(bytes32 => Event) public events;
     mapping(IERC20 => bool) public tokens;
+    mapping(IERC20 => IChronicle) public oracles;
 
     // charity -> token -> balance
     mapping(address => mapping(IERC20 => uint256)) public charityBalances;
@@ -238,12 +245,23 @@ contract On54Cause is Ownable {
     function donate(
         uint256 _amount,
         bytes32 _fundraisingId,
-        IERC20 _token
+        address _token
     ) public {
-        require(tokens[_token], "Token not whitelisted");
-        _token.transferFrom(msg.sender, address(this), _amount);
-        fundraisings[_fundraisingId].donations[_token] += _amount;
-        emit DonationReceived(_fundraisingId, _amount, _token);
+        require(tokens[IERC20(_token)], "Token not whitelisted");
+        IERC20(_token).transferFrom(msg.sender, address(this), _amount);
+        fundraisings[_fundraisingId].donations[IERC20(_token)] += _amount;
+
+        if (oracles[IERC20(_token)] != IChronicle(address(0))) {
+            uint256 price = oracles[IERC20(_token)].read(); // Price in USD, scaled by 10^18
+            uint256 tokenDecimals = IERC20Metadata(_token).decimals(); // Get token's decimals
+            uint256 normalizedAmount = _amount * 10 ** (18 - tokenDecimals); // Normalize to 18 decimals
+
+            fundraisings[_fundraisingId].amountRaised +=
+                (normalizedAmount * price) /
+                10 ** 18;
+        }
+
+        emit DonationReceived(_fundraisingId, _amount, IERC20(_token));
     }
 
     function getCharityBalance(
@@ -258,5 +276,12 @@ contract On54Cause is Ownable {
             );
         }
         return tokenRaised;
+    }
+
+    function addOrUpdateOracle(
+        IERC20 _token,
+        IChronicle _oracle
+    ) public onlyOwner {
+        oracles[_token] = _oracle;
     }
 }
