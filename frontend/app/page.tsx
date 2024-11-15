@@ -9,8 +9,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="pb-20">
-      <div className="relative flex h-[500px] w-full items-center justify-center overflow-hidden bg-background p-20">
+    <div className="pb-10 md:pb-20">
+      <div className="relative flex min-h-[500px] w-full items-center justify-center overflow-hidden bg-background p-5 md:p-20">
         <div className="z-50 flex flex-col items-center justify-center">
           <h1 className=" z-10 mb-4 whitespace-pre-wrap text-center text-6xl font-medium tracking-tighter  ">
             <TypingAnimation
@@ -53,8 +53,8 @@ export default function Home() {
           )}
         />
       </div>
-      <div className="w-full flex items-center justify-center -translate-y-10 z-20 bg-white px-8">
-        <div className="w-1/2 h-auto flex flex-col items-start justify-between ">
+      <div className="w-full flex flex-col md:flex-row items-center justify-center md:-translate-y-10 z-20 bg-white px-4 md:px-8">
+        <div className="w-full md:w-1/2 h-auto flex flex-col items-start justify-between ">
           <h2 className="text-4xl font-bold mb-4 text-custom-yellow-500">
             On Chain 4 Cause
           </h2>
@@ -83,13 +83,13 @@ export default function Home() {
         </div>
         <DescriptionFlow />
       </div>
-      <div className="w-full flex flex-col items-end justify-between px-8 space-y-4">
+      <div className="w-full flex flex-col items-end justify-between px-4 md:px-8 space-y-4 max-md:py-12">
         <h2 className="text-4xl font-bold mb-4 text-custom-red-500">
           How it works?
         </h2>
         <HowItWorks />
       </div>
-      <div className="w-full flex items-end justify-between px-8">
+      <div className="w-full flex flex-col md:flex-row items-center md:items-end justify-between px-4 md:px-8">
         <div>
           <h2 className="text-4xl font-bold mb-4 text-custom-orange-500">
             Why On Chain?{" "}
