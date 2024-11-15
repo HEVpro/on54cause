@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { Londrina_Solid } from "next/font/google"
-import { cn } from "@/lib/utils"
+import { Londrina_Solid } from "next/font/google";
+import { cn } from "@/lib/utils";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -10,10 +11,10 @@ export const metadata: Metadata = {
 };
 
 const londrinaSolid = Londrina_Solid({
-  subsets: ['latin'],
-  weight: ['100', '300', '400', '900'],
-  variable: '--font-londrina-solid',
-})
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "900"],
+  variable: "--font-londrina-solid",
+});
 
 export default function RootLayout({
   children,
@@ -22,8 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(londrinaSolid.className, 'max-h-screen antialiased')}>
+      <body
+        className={cn(londrinaSolid.className, "max-w-6xl antialiased mx-auto")}
+      >
         <Providers>
+          <Navbar />
           {children}
         </Providers>
       </body>

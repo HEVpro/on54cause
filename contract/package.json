@@ -1,0 +1,23 @@
+{
+  "name": "on54cause",
+  "version": "0.0.1",
+  "description": "On54Cause Smart Contract",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "REPORT_GAS=true npx hardhat test",
+    "node": "npx hardhat node",
+    "deploy": "npx hardhat ignition deploy ignition/modules/On54Cause.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.11",
+    "chai": "^4.2.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.15",
+    "hardhat-chai-matchers-viem": "^2.0.8",
+    "hardhat-gas-reporter": "^2.2.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0"
+  }
+}
