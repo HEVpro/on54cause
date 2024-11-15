@@ -28,15 +28,16 @@ export default function OnBoarding() {
     return (
         <div className="flex min-h-screen">
 
-            <div className="flex-1 flex flex-col items-center justify-center m-10 border border-custom-red-500 rounded-xl">
+            <div className="flex-1 flex flex-col items-center justify-center  border border-custom-red-500 rounded-xl">
                 <p className="">Let&apos;s get started! Are you joining as an individual or a charity? Select the option that fits you best.</p>
             </div>
-            <div className="flex-1 flex flex-col justify-center items-center gap-4">
-                <div className="flex flex-col justify-between gap-10">
-                    <Label className="text-4xl text-center">Account Type</Label>
+            <div className="flex-1 flex flex-col justify-center items-center gap-4 m-10">
+                <div className="flex flex-col justify-center gap-10">
+                    <Label className="text-4xl text-center">
+                        How are you identified?</Label>
                     <Select value={accountType} onValueChange={setAccountType}>
-                        <SelectTrigger className="w-[300px] focus:outline-none focus:ring-0 focus:ring-offset-0" >
-                            <SelectValue placeholder="Account Type" />
+                        <SelectTrigger className=" focus:outline-none focus:ring-0 focus:ring-offset-0" >
+                            <SelectValue placeholder="Select Account Type" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="charity">Charity</SelectItem>
