@@ -1,11 +1,11 @@
 'use client'
 
-import { useWeb3AuthProvider } from '@/lib/auth/authProvider'
+import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import Image from 'next/image'
 import ShimmerButton from './ui/shimmer-button'
 
 export default function LogoutButton() {
-    const { logout, setLoggedIn, setProvider } = useWeb3AuthProvider()
+    const { logout, setLoggedIn, setProvider } = useWeb3AuthNoModalProvider()
 
     return (
         <ShimmerButton

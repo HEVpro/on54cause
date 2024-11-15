@@ -33,7 +33,7 @@ const chainConfig = {
     logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
 }
 
-export const useWeb3AuthProvider = () => {
+export const useWeb3AuthNoModalProvider = () => {
     const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null)
     const [provider, setProvider] = useState<IProvider | null>(null)
     const [loggedIn, setLoggedIn] = useState<boolean | null>(false)

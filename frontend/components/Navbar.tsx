@@ -4,12 +4,12 @@ import { Button } from './ui/button'
 import Link from 'next/link'
 import ShimmerButton from './ui/shimmer-button'
 import { usePathname } from 'next/navigation'
-import { useWeb3AuthProvider } from '@/lib/auth/authProvider'
+import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import LogoutButton from './LogoutButton'
 
 export default function Navbar() {
     const pathname = usePathname()
-    const { loggedIn } = useWeb3AuthProvider()
+    const { loggedIn } = useWeb3AuthNoModalProvider()
 
     return (
         <div className="flex h-16 w-full bg-white/70 z-[9999] items-center justify-between backdrop-blur-md px-4 py-2 mx-auto sticky top-0">

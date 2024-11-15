@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { useWeb3AuthProvider } from '@/lib/auth/authProvider'
+import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import { IProvider, WALLET_ADAPTERS } from '@web3auth/base'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -10,7 +10,7 @@ import { log } from 'console'
 export default function Page() {
     const searchParams = useSearchParams()
     const isFromOnBoarding = searchParams.get('isFromOnBoarding')
-    const { login, loggedIn } = useWeb3AuthProvider()
+    const { login, loggedIn } = useWeb3AuthNoModalProvider()
     const [isBeingRedirected, setIsBeingRedirected] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const router = useRouter()
