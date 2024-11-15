@@ -35,6 +35,7 @@ export default function AnimatedGridPattern({
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [squares, setSquares] = useState(() => generateSquares(numSquares));
+  const [colorIndex, setColorIndex] = useState(0);
 
   function getPos() {
     return [
@@ -43,7 +44,6 @@ export default function AnimatedGridPattern({
     ];
   }
 
-  // Adjust the generateSquares function to return objects with an id, x, and y
   function generateSquares(count: number) {
     return Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -51,7 +51,6 @@ export default function AnimatedGridPattern({
     }));
   }
 
-  // Function to update a single square's position
   const updateSquarePosition = (id: number) => {
     setSquares((currentSquares) =>
       currentSquares.map((sq) =>
@@ -60,19 +59,17 @@ export default function AnimatedGridPattern({
               ...sq,
               pos: getPos(),
             }
-          : sq,
-      ),
+          : sq
+      )
     );
   };
 
-  // Update squares to animate in
   useEffect(() => {
     if (dimensions.width && dimensions.height) {
       setSquares(generateSquares(numSquares));
     }
   }, [dimensions, numSquares]);
 
-  // Resize observer to update container dimensions
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -94,13 +91,66 @@ export default function AnimatedGridPattern({
     };
   }, [containerRef]);
 
+  const colorHexValues = [
+    "#f0fafb",
+    "#d8f1f5",
+    "#b5e2ec",
+    "#82cdde",
+    "#53b3cb",
+    "#2d92ad",
+    "#287692",
+    "#266078",
+    "#275163",
+    "#244455",
+    "#fffbeb",
+    "#fdf3c8",
+    "#fce68b",
+    "#fad34f",
+    "#f9c22e",
+    "#f39f0d",
+    "#d77908",
+    "#b2540b",
+    "#91410f",
+    "#773610",
+    "#fef3f2",
+    "#fee5e2",
+    "#ffcfc9",
+    "#fdaea4",
+    "#f97f70",
+    "#f15946",
+    "#de3924",
+    "#bb2c1a",
+    "#9a281a",
+    "#80271c",
+    "#fff1f3",
+    "#ffe4e7",
+    "#ffccd5",
+    "#fea3b2",
+    "#fd6f8b",
+    "#f63d65",
+    "#e01a4f",
+    "#c01043",
+    "#a1103f",
+    "#8a113c",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColorIndex((prevIndex) => (prevIndex + 1) % colorHexValues.length);
+    }, 1000); // Change color every 1000ms
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const randomColor = colorHexValues[colorIndex];
+
   return (
     <svg
       ref={containerRef}
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute inset-0 h-full w-full fill-gray-400/30 stroke-gray-400/30",
-        className,
+        `pointer-events-none absolute inset-0 h-full w-full `,
+        className
       )}
       {...props}
     >
@@ -116,6 +166,7 @@ export default function AnimatedGridPattern({
           <path
             d={`M.5 ${height}V.5H${width}`}
             fill="none"
+            stroke={"#ffffff"}
             strokeDasharray={strokeDasharray}
           />
         </pattern>
@@ -138,7 +189,7 @@ export default function AnimatedGridPattern({
             height={height - 1}
             x={x * width + 1}
             y={y * height + 1}
-            fill="currentColor"
+            fill={randomColor}
             strokeWidth="0"
           />
         ))}
