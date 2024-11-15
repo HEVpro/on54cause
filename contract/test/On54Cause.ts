@@ -13,17 +13,29 @@ enum Status {
 
 describe("On54Cause", function () {
   let on54Cause: any;
+  let mockERC20: any;
   let eventIdOne: `0x${string}`;
   let eventIdTwo: `0x${string}`;
   let eventIdThree: `0x${string}`;
   let fundraisingId: `0x${string}`;
   before(async function () {
+    const [, , , donor] = await hre.viem.getWalletClients();
     on54Cause = await hre.viem.deployContract("On54Cause");
+    mockERC20 = await hre.viem.deployContract("MockERC20");
   });
 
   describe("Deployment", function () {
     it("Should deploy", async function () {
       expect(on54Cause.address).to.not.be.undefined;
+    });
+
+    it("Should deploy mockERC20", async function () {
+      expect(mockERC20.address).to.not.be.undefined;
+    });
+
+    it("Should mint mockERC20", async function () {
+      const [, donor] = await hre.viem.getWalletClients();
+      await mockERC20.write.mint([donor.account.address, 1000]);
     });
 
     it("Should not let non-owner use onlyOwner functions", async function () {
@@ -66,7 +78,7 @@ describe("On54Cause", function () {
     });
 
     after(async function () {
-      await on54Cause.write.whitelistToken([CIRCLE_USDC_POLYGON_AMOY]);
+      await on54Cause.write.whitelistToken([mockERC20.address]);
     });
   });
 
@@ -289,6 +301,29 @@ describe("On54Cause", function () {
           }
         )
       ).to.be.reverted;
+    });
+  });
+  describe("Donations", function () {
+    it("Should not allow donation if token is not whitelisted", async function () {
+      const [, donor] = await hre.viem.getWalletClients();
+      await expect(
+        on54Cause.write.donate([10, fundraisingId, CIRCLE_USDC_POLYGON_AMOY], {
+          account: donor.account,
+        })
+      ).to.be.reverted;
+    });
+    it("Should allow allowance", async function () {
+      const [, donor] = await hre.viem.getWalletClients();
+      await mockERC20.write.approve([on54Cause.address, 10], {
+        account: donor.account,
+      });
+    });
+    it("Should allow donation", async function () {
+      const [, donor] = await hre.viem.getWalletClients();
+      console.log(await mockERC20.read.balanceOf([donor.account.address]));
+      await on54Cause.write.donate([10, fundraisingId, mockERC20.address], {
+        account: donor.account,
+      });
     });
   });
 });

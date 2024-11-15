@@ -39,6 +39,9 @@ contract On54Cause is Ownable {
     mapping(bytes32 => Event) public events;
     mapping(IERC20 => bool) public tokens;
 
+    // charity -> token -> balance
+    mapping(address => mapping(address => uint256)) public charityBalances;
+
     event EventCreated(Event eventDetails);
     event FundraisingCreated(Fundraising fundraisingDetails);
     event EventCompleted(Event eventDetails);
@@ -75,9 +78,8 @@ contract On54Cause is Ownable {
         );
         require(events[_event].status == Status.OPEN, "Event is not open");
         events[_event].status = Status.COMPLETED;
-        emit EventCompleted(events[_event]);
 
-        // TODO: Logic to transfer funds to charity
+        emit EventCompleted(events[_event]);
     }
 
     function createFundraising(Fundraising memory _fundraising) public {
