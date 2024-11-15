@@ -17,6 +17,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 const formSchema = z.object({
     name: z.string().min(2).max(50),
@@ -55,20 +57,25 @@ export default function Step1() {
         }
     }, []);
 
-    // useEffect(() => {
-    //     form.setValue("sector", form.watch("sector").toString())
-    // }, [form.watch("sector")])
-
-    console.log("form.watch -->", form.watch("sector"))
-    console.log("form.getValues -->", form.getValues("sector"))
-
-
     return (
         <>
-            <div className="flex-1 flex flex-col items-center justify-center p-10 border border-custom-red-500 rounded-xl">
+            <motion.div
+                key="step1-header"
+                initial={{ x: "50%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "50%" }}
+                transition={{ duration: 0.5, ease: "linear" }}
+                className="z-50 w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 bg-[#D4D7E1] rounded-xl">
                 <p className="text-2xl">Tell us a bit about your charity so we can get you set up!</p>
-            </div>
-            <div className="flex-1 flex flex-col justify-center items-center gap-4 m-10">
+                <Image className="mt-auto" src="/nouns/noun-2.png" alt="step1" width={600} height={600} />
+            </motion.div>
+            <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: "-50%" }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: "-50%" }}
+                transition={{ duration: 0.5, ease: "linear" }}
+                className="z-0 w-1/2 h-[calc(100vh-4rem)] absolute left-1/2 flex-1 flex flex-col justify-center items-center gap-4">
 
                 <p className="text-center text-2xl">Let's start getting to know each other with a few basic questions.</p>
                 <Form {...form}>
@@ -93,7 +100,7 @@ export default function Step1() {
                                 <FormItem className="max-w-96 w-full">
                                     <FormLabel>Sector</FormLabel>
                                     <Select onValueChange={(value) => field.onChange(value)} value={field.value} defaultValue={field.value} >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="focus:outline-none focus:ring-0 focus:ring-offset-0" >
                                             <SelectValue placeholder="Select a sector" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -126,7 +133,7 @@ export default function Step1() {
                         <Button className="max-w-96 w-full" type="submit">Next step</Button>
                     </form>
                 </Form>
-            </div>
+            </motion.div>
         </>
     );
 }

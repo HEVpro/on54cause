@@ -24,12 +24,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={cn(londrinaSolid.className, "max-w-6xl antialiased mx-auto")}
+        className={cn(londrinaSolid.className)}
       >
-        <Providers>
-          <Navbar />
-          {children}
-        </Providers>
+        <div className="max-w-6xl mx-auto antialiased">
+
+          <Providers>
+            <Navbar />
+            {children}
+          </Providers>
+        </div>
       </body>
     </html>
   );

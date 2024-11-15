@@ -18,7 +18,8 @@ import { Input } from "@/components/ui/input"
 import { ChevronLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChangeEvent, useEffect, useState } from "react";
-
+import { motion } from "framer-motion";
+import Image from "next/image";
 const formSchema = z.object({
     description: z.string().min(2).max(200),
     youtube: z.string().regex(/^https:\/\/www\.youtube\.com\/[a-zA-Z0-9_-]+$/, "Invalid YouTube link (e.g. https://www.youtube.com/username)"),
@@ -86,11 +87,25 @@ export default function Step2() {
 
     return (
         <>
-            <div className="flex-1 flex flex-col items-center justify-center p-10 border border-custom-red-500 rounded-xl">
+            <motion.div
+                key="step2-header"
+                initial={{ x: "-50%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-50%" }}
+                transition={{ duration: 0.5, ease: "linear" }}
+                className="z-50 absolute left-1/2 w-1/2 min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 bg-[#D4D7E1] rounded-xl">
                 <p className="text-2xl">Tell us a bit about your charity so we can get you set up!</p>
-            </div>
-            <div className="relative flex-1 flex flex-col justify-center items-center gap-4 m-10">
-                <button className="absolute left-0 top-0 bg-transparent border-none text-black" type="button" onClick={() => previousStep()}>
+                <Image className="mt-auto" src="/nouns/noun-2.png" alt="step1" width={600} height={600} />
+            </motion.div>
+            <motion.div
+                key="step2"
+                initial={{ x: "50%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "50%" }}
+                transition={{ duration: 0.5, ease: "linear" }}
+                className="z-0 absolute top-0 h-[calc(100vh-4rem)] w-1/2 flex flex-col justify-center items-center gap-4">
+
+                <button className="bg-transparent absolute left-0 top-0 border-none text-black mr-auto " type="button" onClick={() => previousStep()}>
                     <ChevronLeft />
                 </button>
                 <p className="text-center text-2xl">Let's get to know each other a bit better! I just have a few more quick questions for you.</p>
@@ -176,7 +191,7 @@ export default function Step2() {
                         <Button className="max-w-96 w-full" type="submit">Next step</Button>
                     </form>
                 </Form>
-            </div>
+            </motion.div>
         </>
     );
 }
