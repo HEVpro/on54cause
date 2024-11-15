@@ -17,7 +17,7 @@ export default function Navbar() {
         <p className="text-2xl font-bold">On54Cause</p>
       </div>
       <div className="w-fit flex items-center gap-4">
-        <p className="text-lg pt-4 text-custom-green-500">Already registerd?</p>
+        <p className="hidden md:block text-lg pt-4 text-custom-green-500">Already registerd?</p>
         {/* TODO: link to signup */}
         <Link href={"/onboarding"}>
           <ShimmerButton
@@ -27,13 +27,13 @@ export default function Navbar() {
             shimmerSize="0.2em"
             background="#f97f70"
           >
-            Click
+            Login
             <Image
               src="/glasses/glasses-square-teal.png"
               alt="nouns-glasses"
               width={250} // Increase the width
               height={250} // Increase the height
-              className="w-24 h-24 p-0  pt-3" // Adjust the className to match the new size
+              className="w-24 h-24 p-0 pt-3" // Adjust the className to match the new size
             />
           </ShimmerButton>
         </Link>
