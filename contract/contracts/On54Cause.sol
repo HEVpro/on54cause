@@ -26,10 +26,9 @@ contract On54Cause is Ownable {
 
     struct Fundraising {
         bytes32 id;
-        uint256 targetAmount;
-        uint256 currentAmount;
+        uint256 targetAmount; // target amount in USD
+        mapping(IERC20 => uint256) donations;
         address beneficiary;
-        address[] donors;
         address charity;
         Status status;
         bytes32 associatedEvent;
@@ -43,15 +42,41 @@ contract On54Cause is Ownable {
     mapping(address => mapping(address => uint256)) public charityBalances;
 
     event EventCreated(Event eventDetails);
-    event FundraisingCreated(Fundraising fundraisingDetails);
+    event FundraisingCreated(
+        bytes32 fundraisingId,
+        uint256 targetAmount,
+        address beneficiary,
+        address charity,
+        Status status,
+        bytes32 associatedEvent
+    );
     event EventCompleted(Event eventDetails);
     event EventCancelled(Event eventDetails);
     event TokenWhitelisted(IERC20 token);
     event TokenBlacklisted(IERC20 token);
 
-    function createEvent(Event memory _event) public {
-        _event.id = keccak256(abi.encode(_event.title, _event.organiser));
-        events[_event.id] = _event;
+    function createEvent(
+        uint32 _date,
+        string memory _title,
+        string memory _description,
+        string memory _imgUrl
+    ) public {
+        require(_date > block.timestamp, "Event date is in the past");
+        require(bytes(_title).length > 0, "Title cannot be empty");
+        require(bytes(_description).length > 0, "Description cannot be empty");
+        require(bytes(_imgUrl).length > 0, "Image URL cannot be empty");
+        bytes32 _id = keccak256(abi.encode(_title, msg.sender));
+        Event memory _event = Event({
+            id: _id,
+            organiser: msg.sender,
+            date: _date,
+            title: _title,
+            description: _description,
+            imgUrl: _imgUrl,
+            status: Status.OPEN,
+            fundraisings: new bytes32[](0)
+        });
+        events[_id] = _event;
         emit EventCreated(_event);
     }
 
@@ -82,26 +107,58 @@ contract On54Cause is Ownable {
         emit EventCompleted(events[_event]);
     }
 
-    function createFundraising(Fundraising memory _fundraising) public {
+    function createFundraising(
+        uint256 _targetAmount,
+        bytes32 _associatedEvent,
+        address _beneficiary,
+        address _charity
+    ) public {
         require(
-            events[_fundraising.associatedEvent].status == Status.OPEN,
+            events[_associatedEvent].status == Status.OPEN,
             "Event is not open"
         );
-        _fundraising.id = keccak256(
-            abi.encode(_fundraising.associatedEvent, _fundraising.beneficiary)
+        require(_targetAmount > 0, "Target amount must be greater than 0");
+        require(_beneficiary != address(0), "Beneficiary cannot be 0 address");
+        require(_charity != address(0), "Charity cannot be 0 address");
+        require(_charity != _beneficiary, "Charity cannot be the beneficiary");
+        bytes32 _fundraisingId = keccak256(
+            abi.encode(_associatedEvent, _beneficiary)
         );
         require(
-            fundraisings[_fundraising.id].id == bytes32(0),
+            fundraisings[_fundraisingId].targetAmount == 0,
             "Fundraising already exists"
         );
-        fundraisings[_fundraising.id] = _fundraising;
-        emit FundraisingCreated(_fundraising);
+        Fundraising storage _fundraising = fundraisings[_fundraisingId];
+        _fundraising.targetAmount = _targetAmount;
+        _fundraising.associatedEvent = _associatedEvent;
+        _fundraising.beneficiary = _beneficiary;
+        _fundraising.charity = _charity;
+        emit FundraisingCreated(
+            _fundraisingId,
+            _targetAmount,
+            _beneficiary,
+            _charity,
+            Status.OPEN,
+            _associatedEvent
+        );
     }
 
     function getFundraising(
         bytes32 _id
-    ) public view returns (Fundraising memory) {
-        return fundraisings[_id];
+    )
+        public
+        view
+        returns (bytes32, uint256, address, address, Status, bytes32)
+    {
+        Fundraising storage _fundraising = fundraisings[_id];
+        return (
+            _fundraising.id,
+            _fundraising.targetAmount,
+            _fundraising.beneficiary,
+            _fundraising.charity,
+            _fundraising.status,
+            _fundraising.associatedEvent
+        );
     }
 
     function whitelistToken(IERC20 _token) public onlyOwner {
@@ -123,6 +180,6 @@ contract On54Cause is Ownable {
     ) public {
         require(tokens[_token], "Token not whitelisted");
         _token.transferFrom(msg.sender, address(this), _amount);
-        fundraisings[_fundraisingId].currentAmount += _amount;
+        fundraisings[_fundraisingId].donations[_token] += _amount;
     }
 }

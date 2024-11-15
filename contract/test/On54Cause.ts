@@ -96,16 +96,10 @@ describe("On54Cause", function () {
       expect(
         await on54Cause.write.createEvent(
           [
-            {
-              id: "0x0000000000000000000000000000000000000000000000000000000000000000",
-              organiser: charity.account.address,
-              date: fundraisingLimitDate,
-              title: "Test Event",
-              description: "This is a test event",
-              imgUrl: "https://example.com/image.png",
-              status: Status.OPEN,
-              fundraisings: [],
-            },
+            fundraisingLimitDate,
+            "Test Event",
+            "This is a test event",
+            "https://example.com/image.png",
           ],
           {
             account: charity.account,
@@ -116,16 +110,10 @@ describe("On54Cause", function () {
       expect(
         await on54Cause.write.createEvent(
           [
-            {
-              id: "0x0000000000000000000000000000000000000000000000000000000000000000",
-              organiser: charity.account.address,
-              date: fundraisingLimitDate,
-              title: "Test Event 2",
-              description: "This is a test event 2",
-              imgUrl: "https://example.com/image2.png",
-              status: Status.OPEN,
-              fundraisings: [],
-            },
+            fundraisingLimitDate,
+            "Test Event 2",
+            "This is a test event 2",
+            "https://example.com/image2.png",
           ],
           {
             account: charity.account,
@@ -136,16 +124,10 @@ describe("On54Cause", function () {
       expect(
         await on54Cause.write.createEvent(
           [
-            {
-              id: "0x0000000000000000000000000000000000000000000000000000000000000000",
-              organiser: charity.account.address,
-              date: fundraisingLimitDate,
-              title: "Test Event 3",
-              description: "This is a test event 3",
-              imgUrl: "https://example.com/image3.png",
-              status: Status.OPEN,
-              fundraisings: [],
-            },
+            fundraisingLimitDate,
+            "Test Event 3",
+            "This is a test event 3",
+            "https://example.com/image3.png",
           ],
           {
             account: charity.account,
@@ -227,16 +209,10 @@ describe("On54Cause", function () {
       await expect(
         on54Cause.write.createFundraising(
           [
-            {
-              id: "0x0000000000000000000000000000000000000000000000000000000000000000",
-              targetAmount: 1n,
-              currentAmount: 0n,
-              beneficiary: fundraiser.account.address,
-              donors: [],
-              charity: charity.account.address,
-              status: Status.OPEN,
-              associatedEvent: eventIdThree,
-            },
+            100n,
+            eventIdThree,
+            fundraiser.account.address,
+            charity.account.address,
           ],
           {
             account: fundraiser.account,
@@ -249,16 +225,10 @@ describe("On54Cause", function () {
       await expect(
         on54Cause.write.createFundraising(
           [
-            {
-              id: "0x0000000000000000000000000000000000000000000000000000000000000000",
-              targetAmount: 1n,
-              currentAmount: 0n,
-              beneficiary: fundraiser.account.address,
-              donors: [],
-              charity: charity.account.address,
-              status: Status.OPEN,
-              associatedEvent: eventIdTwo,
-            },
+            100n,
+            eventIdOne,
+            fundraiser.account.address,
+            charity.account.address,
           ],
           {
             account: fundraiser.account,
@@ -276,7 +246,7 @@ describe("On54Cause", function () {
         ])
       );
       const fundraising = await on54Cause.read.getFundraising([fundraisingId]);
-      expect(fundraising.beneficiary.toLowerCase()).to.equal(
+      expect(fundraising[2].toLowerCase()).to.equal(
         fundraiser.account.address.toLowerCase()
       );
     });
@@ -285,16 +255,10 @@ describe("On54Cause", function () {
       await expect(
         on54Cause.write.createFundraising(
           [
-            {
-              id: "0x0000000000000000000000000000000000000000000000000000000000000000",
-              targetAmount: 1n,
-              currentAmount: 0n,
-              beneficiary: fundraiser.account.address,
-              donors: [],
-              charity: charity.account.address,
-              status: Status.OPEN,
-              associatedEvent: eventIdTwo,
-            },
+            100n,
+            eventIdThree,
+            fundraiser.account.address,
+            charity.account.address,
           ],
           {
             account: fundraiser.account,
@@ -320,7 +284,6 @@ describe("On54Cause", function () {
     });
     it("Should allow donation", async function () {
       const [, donor] = await hre.viem.getWalletClients();
-      console.log(await mockERC20.read.balanceOf([donor.account.address]));
       await on54Cause.write.donate([10, fundraisingId, mockERC20.address], {
         account: donor.account,
       });
