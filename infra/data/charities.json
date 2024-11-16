@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Save the Children",
+    "description": "Empowering children worldwide with access to education, healthcare, and opportunities for a brighter future.",
+    "web": "https://www.savethechildren.org",
+    "image_url": "https://example.com/images/save-the-children-logo.png",
+    "address": "0x1234AbCd5678Ef901234567890abcdef12345678"
+  },
+  {
+    "title": "World Wildlife Fund",
+    "description": "Protecting endangered species and their habitats to ensure a sustainable future for people and nature.",
+    "web": "https://www.worldwildlife.org",
+    "image_url": "https://example.com/images/wwf-logo.png",
+    "address": "0x5678Ef901234567890abcdef123456781234AbCd"
+  },
+  {
+    "title": "UNICEF",
+    "description": "Advocating for children’s rights and providing humanitarian aid to vulnerable kids around the globe.",
+    "web": "https://www.unicef.org",
+    "image_url": "https://example.com/images/unicef-logo.png",
+    "address": "0x90abcdef123456781234AbCd5678Ef9012345678"
+  },
+  {
+    "title": "Doctors Without Borders",
+    "description": "Delivering medical care to people affected by conflict, epidemics, disasters, and lack of healthcare access.",
+    "web": "https://www.doctorswithoutborders.org",
+    "image_url": "https://example.com/images/doctors-without-borders-logo.png",
+    "address": "0xabcdef123456781234AbCd5678Ef901234567890"
+  },
+  {
+    "title": "Red Cross",
+    "description": "Providing emergency assistance, disaster relief, and education to people in crisis worldwide.",
+    "web": "https://www.redcross.org",
+    "image_url": "https://example.com/images/red-cross-logo.png",
+    "address": "0x1234567890abcdef1234AbCd5678Ef901234567"
+  },
+  {
+    "title": "Charity: Water",
+    "description": "Bringing clean and safe drinking water to communities in developing nations, one project at a time.",
+    "web": "https://www.charitywater.org",
+    "image_url": "https://example.com/images/charity-water-logo.png",
+    "address": "0x5678Ef901234567890abcdef1234AbCd5678Ef90"
+  },
+  {
+    "title": "Oxfam",
+    "description": "Fighting inequality to end poverty and support communities with essential resources and advocacy.",
+    "web": "https://www.oxfam.org",
+    "image_url": "https://example.com/images/oxfam-logo.png",
+    "address": "0x90abcdef123456781234AbCd5678Ef9012345678"
+  },
+  {
+    "title": "Amnesty International",
+    "description": "Campaigning to protect human rights and fight injustice wherever it occurs.",
+    "web": "https://www.amnesty.org",
+    "image_url": "https://example.com/images/amnesty-international-logo.png",
+    "address": "0xabcdef123456781234AbCd5678Ef901234567890"
+  }
+]
