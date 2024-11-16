@@ -83,6 +83,13 @@ export const useWeb3AuthNoModalProvider = () => {
                     clientId,
                     privateKeyProvider,
                     web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
+                    uiConfig: {
+                        appName: 'On54Cause',
+                        mode: 'light',
+                        defaultLanguage: 'en',
+                        logoLight:
+                            '165.227.177.41:8000/buckets/assets/files/logo.jpeg/download',
+                    },
                 })
 
                 const authAdapter = new AuthAdapter({
