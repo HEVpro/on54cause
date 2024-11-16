@@ -64,29 +64,48 @@ export default function ListEvents() {
 
     const mockEvents = [
         {
-            chainId: 88882,
-            id: '0x4fa3aa42d6ce45f3cd4cc97645180a486421a882219833f1bd8682192c2051b3',
+            chainId: 80002,
+            id: 'FAD1B407A85421DFCF42EBC67C0F19E428753E46BF9E35BAD1A325B1301BB26F',
         },
     ]
     const mappedEvents = mockEvents.map((event) => ({
         abi: abi as Abi, // Cast abi to the correct type
-        address: '0x0172e3262B9f676BECC2a5cDc7e82ab9d6D3298F' as `0x${string}`,
+        address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6' as `0x${string}`,
         args: [event.id],
         functionName: 'getEvent',
     }))
 
-    const { data } = useReadContracts({
-        contracts: mappedEvents,
-    })
+    // const { data } = useReadContracts({
+    //     contracts: [{
+    //         abi: abi as Abi, // Cast abi to the correct type
+    //         address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6',
+    //         args: ["FAD1B407A85421DFCF42EBC67C0F19E428753E46BF9E35BAD1A325B1301BB26F"],
+    //         functionName: 'getEvent',
+    //     }],
+    // })
 
-    useEffect(() => {
-        if (data) {
-            const formattedEvents = data.map((event) => {
-                return event.result
-            })
-            setEvents(formattedEvents as any[])
-        }
-    }, [data])
+    const data = [{
+        id: 'some-id', // Add a unique id
+        organiser: 'some-organiser', // Add an organiser
+        title: 'Test Event',
+        description: 'TestTest description for an amazing sports charity event',
+        date: 1716000000,
+        charity: 'Test Charity',
+        imgUrl: 'https://via.placeholder.com/150',
+        status: 1,
+        fundraisings: ['1', '2', '3'],
+    }]
+
+
+    // useEffect(() => {
+    //     if (data) {
+    //         const formattedEvents = data.map((event) => {
+    //             console.log('event', event)
+    //             return event
+    //         })
+    //         setEvents(formattedEvents as any[])
+    //     }
+    // }, [data])
     console.log('events', data)
 
     const colors = [
@@ -101,7 +120,7 @@ export default function ListEvents() {
 
     useEffect(() => {
         const formattedEvents = data?.map((event) => {
-            return event.result
+            return event
         }) as EventData[]
         setEvents(formattedEvents as any[])
         if (debouncedName && debouncedName.length > 0) {
@@ -228,7 +247,7 @@ export default function ListEvents() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 p-4">
                 {events?.map((event, index) => (
                     <EventCard
-                        key={event.id}
+                        key={event?.id}
                         data={event}
                         color={getRandomColor()}
                     />

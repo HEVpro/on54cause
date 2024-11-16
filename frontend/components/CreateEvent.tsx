@@ -23,6 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 const formSchema = z.object({
     title: z.string().min(2).max(50),
@@ -148,7 +149,9 @@ export default function CreateEvent() {
                         )}
                     />
 
-                    <Button type="submit" className="bg-custom-green-500 text-white hover:bg-custom-green-800">Submit</Button>
+                    <Button type="submit" className="bg-custom-green-500 text-white hover:bg-custom-green-800">Submit
+                        <Image src="/nouns/noun-10.png" alt="noun" width={24} height={24} className="ml-2" />
+                    </Button>
                 </form>
             </Form>
         </>
