@@ -1,3 +1,10 @@
+import NewLink from '@/components/NewLink'
+import { Suspense } from 'react'
+
 export default function Page() {
-    return <div>New Link</div>
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <NewLink />
+        </Suspense>
+    )
 }

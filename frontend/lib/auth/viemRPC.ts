@@ -1,142 +1,186 @@
 import {
-  createWalletClient,
-  createPublicClient,
-  custom,
-  formatEther,
-  parseEther,
-} from "viem";
-import { mainnet, polygonAmoy, sepolia } from "viem/chains";
-import type { IProvider } from "@web3auth/base";
+    createWalletClient,
+    createPublicClient,
+    custom,
+    formatEther,
+    parseEther,
+} from 'viem'
+import { spicy, mainnet, polygonAmoy } from 'viem/chains'
+import type { IProvider } from '@web3auth/base'
 
 const getViewChain = (provider: IProvider) => {
-  switch (provider.chainId) {
-    case "1":
-      return mainnet;
-    case "0x13882":
-      return polygonAmoy;
-    case "0xaa36a7":
-      return sepolia;
-    default:
-      return mainnet;
-  }
-};
+    switch (provider.chainId) {
+        case '88882':
+            return spicy
+        case '1':
+            return mainnet
+        case '0x13882':
+        case '80002':
+            return polygonAmoy
+        case '0xaa36a7':
+        default:
+            return polygonAmoy
+    }
+}
 
 const getChainId = async (provider: IProvider): Promise<any> => {
-  try {
-    const walletClient = createWalletClient({
-      transport: custom(provider),
-    });
+    try {
+        const walletClient = createWalletClient({
+            chain: spicy,
+            transport: custom(provider),
+        })
 
-    const address = await walletClient.getAddresses();
-    console.log(address);
+        const address = await walletClient.getAddresses()
+        console.log(address)
+        const chainId = await walletClient.getChainId()
 
-    const chainId = await walletClient.getChainId();
-    return chainId.toString();
-  } catch (error) {
-    return error;
-  }
-};
+        return chainId.toString()
+    } catch (error) {
+        return error
+    }
+}
 const getAccounts = async (provider: IProvider): Promise<any> => {
-  try {
-    const walletClient = createWalletClient({
-      chain: getViewChain(provider),
-      transport: custom(provider),
-    });
+    try {
+        const walletClient = createWalletClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
 
-    const address = await walletClient.getAddresses();
+        const address = await walletClient.getAddresses()
 
-    return address;
-  } catch (error) {
-    return error;
-  }
-};
+        return address
+    } catch (error) {
+        return error
+    }
+}
 
 const getBalance = async (provider: IProvider): Promise<string> => {
-  try {
-    const publicClient = createPublicClient({
-      chain: getViewChain(provider),
-      transport: custom(provider),
-    });
+    try {
+        const publicClient = createPublicClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
 
-    const walletClient = createWalletClient({
-      chain: getViewChain(provider),
-      transport: custom(provider),
-    });
+        const walletClient = createWalletClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
 
-    const address = await walletClient.getAddresses();
+        const address = await walletClient.getAddresses()
 
-    const balance = await publicClient.getBalance({ address: address[0] });
-    console.log(balance);
-    return formatEther(balance);
-  } catch (error) {
-    return error as string;
-  }
-};
+        const balance = await publicClient.getBalance({ address: address[0] })
+        console.log(balance)
+        return formatEther(balance)
+    } catch (error) {
+        return error as string
+    }
+}
 
 const sendTransaction = async (provider: IProvider): Promise<any> => {
-  try {
-    const publicClient = createPublicClient({
-      chain: getViewChain(provider),
-      transport: custom(provider),
-    });
+    try {
+        const publicClient = createPublicClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
 
-    const walletClient = createWalletClient({
-      chain: getViewChain(provider),
-      transport: custom(provider),
-    });
+        const walletClient = createWalletClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
 
-    // data for the transaction
-    const destination = "0x40e1c367Eca34250cAF1bc8330E9EddfD403fC56";
-    const amount = parseEther("0.0001");
-    const address = await walletClient.getAddresses();
+        // data for the transaction
+        const destination = '0x40e1c367Eca34250cAF1bc8330E9EddfD403fC56'
+        const amount = parseEther('0.0001')
+        const address = await walletClient.getAddresses()
 
-    // Submit transaction to the blockchain
-    const hash = await walletClient.sendTransaction({
-      account: address[0],
-      to: destination,
-      value: amount,
-    });
-    console.log(hash);
-    const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        // Submit transaction to the blockchain
+        const hash = await walletClient.sendTransaction({
+            account: address[0],
+            to: destination,
+            value: amount,
+        })
+        console.log(hash)
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
 
-    return JSON.stringify(
-      receipt,
-      (key, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
-    );
-  } catch (error) {
-    return error;
-  }
-};
+        return JSON.stringify(
+            receipt,
+            (key, value) =>
+                typeof value === 'bigint' ? value.toString() : value // return everything else unchanged
+        )
+    } catch (error) {
+        return error
+    }
+}
 
 const signMessage = async (provider: IProvider): Promise<any> => {
-  try {
-    const walletClient = createWalletClient({
-      chain: getViewChain(provider),
-      transport: custom(provider),
-    });
+    try {
+        const walletClient = createWalletClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
 
-    // data for signing
-    const address = await walletClient.getAddresses();
-    const originalMessage = "YOUR_MESSAGE";
+        // data for signing
+        const address = await walletClient.getAddresses()
+        const originalMessage = 'YOUR_MESSAGE'
 
-    // Sign the message
-    const hash = await walletClient.signMessage({
-      account: address[0],
-      message: originalMessage,
-    });
+        // Sign the message
+        const hash = await walletClient.signMessage({
+            account: address[0],
+            message: originalMessage,
+        })
 
-    console.log(hash);
+        console.log(hash)
 
-    return hash.toString();
-  } catch (error) {
-    return error;
-  }
-};
+        return hash.toString()
+    } catch (error) {
+        return error
+    }
+}
+
+const writeContract = async (
+    provider: IProvider,
+    contractABI: any,
+    contractAddress: string,
+    functionName: string,
+    args: any
+) => {
+    try {
+        const publicClient = createPublicClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
+
+        const walletClient = createWalletClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
+
+        // data for writing to the contract
+        const address = await getAccounts(provider)
+
+        // Submit transaction to the blockchain
+        const hash = await walletClient.writeContract({
+            account: address[0],
+            address: contractAddress as `0x${string}`,
+            abi: contractABI,
+            functionName: functionName,
+            args: args,
+            chain: polygonAmoy,
+        })
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+
+        return receipt // Adjust the return type or format as needed
+    } catch (error) {
+        return error
+    }
+}
 
 export default {
-  getChainId,
-  getAccounts,
-  getBalance,
-  sendTransaction,
-  signMessage,
-};
+    getChainId,
+    getAccounts,
+    getBalance,
+    sendTransaction,
+    signMessage,
+    writeContract,
+}

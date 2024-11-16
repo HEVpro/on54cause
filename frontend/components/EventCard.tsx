@@ -80,7 +80,9 @@ export function EventCard({
         {
             title: 'Create link',
             onClick: () => {
-                router.push('/events/new-link')
+                router.push(
+                    `/events/new-link?eventId=${data.id}&eventTitle=${data.title}&organizer=${data.organiser}&date=${data.date}&description=${data.description}&imgUrl=${data.imgUrl}`
+                )
             },
             type: 'individual',
             isDestructive: false,

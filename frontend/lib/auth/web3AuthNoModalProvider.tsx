@@ -13,11 +13,14 @@ import {
 import { AuthAdapter } from '@web3auth/auth-adapter'
 import { getPublicCompressed } from '@toruslabs/eccrypto'
 import { clientId, chainConfig } from '@/lib/constants'
+import RPC from './viemRPC' // for using viem
+import { AbiItem } from 'viem'
 
 export const useWeb3AuthNoModalProvider = () => {
     const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null)
     const [provider, setProvider] = useState<IProvider | null>(null)
     const [loggedIn, setLoggedIn] = useState<boolean | null>(false)
+    const [userAddress, setUserAddress] = useState<string | null>(null)
 
     function uiConsole(...args: any[]): void {
         const el = document.querySelector('#console>p')
@@ -32,6 +35,44 @@ export const useWeb3AuthNoModalProvider = () => {
         }
         const user = await web3auth.getUserInfo()
         return user
+    }
+
+    const getAccounts = async () => {
+        if (!provider) {
+            uiConsole('provider not initialized yet')
+            return
+        }
+        const address = await RPC.getAccounts(provider)
+        if (address.length > 0) {
+            setUserAddress(address[0])
+        }
+        return address
+    }
+
+    const writeContract = async (
+        abi: AbiItem[],
+        address: string,
+        functionName: string,
+        args: any
+    ) => {
+        if (!provider) {
+            uiConsole('provider not initialized yet')
+            return
+        }
+        try {
+            const receipt = await RPC.writeContract(
+                provider,
+                abi,
+                address,
+                functionName,
+                args
+            )
+            console.log('Contract Receipt:', receipt)
+            return receipt
+        } catch (error) {
+            console.error('Error writing contract:', error)
+            return error
+        }
     }
 
     const validateIdToken = async () => {
@@ -73,13 +114,20 @@ export const useWeb3AuthNoModalProvider = () => {
     }
 
     useEffect(() => {
+        console.log('useEffect triggered: initializing web3Auth')
         const init = async () => {
             try {
+                console.log('Creating EthereumPrivateKeyProvider...')
                 const privateKeyProvider = new EthereumPrivateKeyProvider({
                     config: { chainConfig },
                 })
+                console.log(
+                    'EthereumPrivateKeyProvider created:',
+                    privateKeyProvider
+                )
 
-                const web3authInstance = new Web3AuthNoModal({
+                console.log('Creating Web3AuthNoModal instance...')
+                const web3authInstance: Web3AuthNoModal = new Web3AuthNoModal({
                     clientId,
                     privateKeyProvider,
                     web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
@@ -87,35 +135,52 @@ export const useWeb3AuthNoModalProvider = () => {
                         appName: 'On54Cause',
                         mode: 'light',
                         defaultLanguage: 'en',
-                        logoLight:
-                            '165.227.177.41:8000/buckets/assets/files/logo.jpeg/download',
                     },
                 })
+                console.log(
+                    'Web3AuthNoModal instance created:',
+                    web3authInstance
+                )
 
+                console.log('Configuring AuthAdapter...')
                 const authAdapter = new AuthAdapter({
                     adapterSettings: {
                         uxMode: UX_MODE.REDIRECT,
                     },
                     privateKeyProvider,
                 })
+                console.log('AuthAdapter configured:', authAdapter)
+
+                console.log('Configuring adapter for web3authInstance...')
                 web3authInstance.configureAdapter(authAdapter)
                 setWeb3auth(web3authInstance)
+
+                console.log('Initializing web3authInstance...')
                 await web3authInstance.init()
                 setProvider(web3authInstance.provider)
+
                 if (web3authInstance.connected) {
+                    console.log('web3authInstance connected successfully.')
                     setLoggedIn(true)
                     await validateIdToken()
                 } else {
+                    console.log('web3authInstance not connected.')
                     setLoggedIn(false)
                     setProvider(null)
                 }
             } catch (error) {
-                console.error(error)
+                console.error('Error in init function:', error)
             }
         }
 
         init()
     }, [])
+
+    useEffect(() => {
+        if (loggedIn) {
+            getAccounts()
+        }
+    }, [loggedIn])
 
     const login = async () => {
         if (!web3auth) {
@@ -155,5 +220,7 @@ export const useWeb3AuthNoModalProvider = () => {
         loggedIn,
         logout,
         getUserInfo,
+        userAddress,
+        writeContract,
     }
 }
