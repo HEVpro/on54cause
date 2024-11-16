@@ -1,39 +1,51 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable camelcase */
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import * as jose from 'jose'
 
-export default async function handler(
-    req: { headers: { authorization: string }; body: { appPubKey: any } },
-    res: {
-        status: (arg0: number) => {
-            (): any
-            json: { (arg0: { name?: string; error?: any }): void; new (): any }
-            new (): any
-        }
-    }
-) {
+export async function POST(req: Request): Promise<Response> {
     try {
-        const idToken = req.headers.authorization?.split(' ')[1] || ''
-        const app_pub_key = req.body.appPubKey
+        // Obtener el token de autorización
+        const authorization = req.headers.get('authorization') || ''
+        const idToken = authorization.split(' ')[1] || ''
+        const body = await req.json() // Parsear el cuerpo de la solicitud
+        const app_pub_key = body.appPubKey
 
+        // Configurar el JWKS para la verificación
         const jwks = jose.createRemoteJWKSet(
             new URL('https://api.openlogin.com/jwks')
         )
         const jwtDecoded = await jose.jwtVerify(idToken, jwks, {
             algorithms: ['ES256'],
         })
+
+        // Verificar las claves públicas
+        const wallets = (jwtDecoded.payload as any).wallets || []
+        const matchingWallet = wallets.find(
+            (x: { type: string }) => x.type === 'web3auth_app_key'
+        )
+
         if (
-            (jwtDecoded.payload as any).wallets
-                .find((x: { type: string }) => x.type === 'web3auth_app_key')
-                .public_key.toLowerCase() === app_pub_key.toLowerCase()
+            matchingWallet &&
+            matchingWallet.public_key.toLowerCase() ===
+                app_pub_key.toLowerCase()
         ) {
-            // Verified
-            res.status(200).json({ name: 'Validation Success' })
+            // Claves coinciden
+            return new Response(
+                JSON.stringify({ name: 'Validation Success' }),
+                { status: 200 }
+            )
         } else {
-            res.status(400).json({ name: 'Failed' })
+            // Claves no coinciden
+            return new Response(JSON.stringify({ name: 'Failed' }), {
+                status: 400,
+            })
         }
     } catch (error) {
-        res.status(500).json({ error })
+        // Manejo de errores
+        return new Response(
+            //@ts-ignore
+            JSON.stringify({ error: error.message || 'Internal Server Error' }),
+            { status: 500 }
+        )
     }
 }
