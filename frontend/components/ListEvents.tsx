@@ -10,17 +10,49 @@ import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useDebounce } from 'use-debounce';
+import { useQueryState } from 'nuqs';
+import { parseAsIsoDate } from 'nuqs'
+import { useReadContract, useReadContracts, useChainId } from "wagmi";
+import { abi } from "@/lib/wagmi/abi"
+import contracts from "@/lib/wagmi/contracts.json"
+import { Abi } from 'viem'
 
+type EventData = {
+    error?: Error;
+    result?: unknown;
+    status: "success" | "failure";
+};
 
 export default function ListEvents({ initialData }: { initialData: any[] }) {
-    const [name, setName] = useState("")
-    const [charity, setCharity] = useState("")
-    const [date, setDate] = useState<Date>()
-    const [events, setEvents] = useState(initialData)
+    const [name, setName] = useQueryState("name")
+    const [charity, setCharity] = useQueryState("charity")
+    const [date, setDate] = useQueryState("date", parseAsIsoDate)
+    const [events, setEvents] = useState<EventData[]>([])
 
     const [debouncedName] = useDebounce(name, 500);
     const [debouncedCharity] = useDebounce(charity, 500);
     const [debouncedDate] = useDebounce(date, 500);
+
+
+    const mockEvents = [{
+        chainId: 88882,
+        id: "0x4fa3aa42d6ce45f3cd4cc97645180a486421a882219833f1bd8682192c2051b3"
+    }]
+    const mappedEvents = mockEvents.map(event => ({
+        abi: abi as Abi, // Cast abi to the correct type
+        address: "0x0172e3262B9f676BECC2a5cDc7e82ab9d6D3298F" as `0x${string}`,
+        args: [event.id],
+        functionName: 'getEvent'
+    }));
+
+    console.log(mappedEvents)
+
+
+    const { data } = useReadContracts({
+        contracts: mappedEvents
+    })
+    console.log(data)
+
 
     const colors = [
         { class: 'border-custom-green-500', code: "#132b3910" },
@@ -29,34 +61,27 @@ export default function ListEvents({ initialData }: { initialData: any[] }) {
         { class: 'border-custom-red-400', code: "#4d041d10" }
     ];
 
-    // const filteredEvents = events?.filter((event) => {
-    //     const matchesName = event.name?.toLowerCase().includes(debouncedName.toLowerCase()) ?? false;
-    //     const matchesCharity = event.charity?.toLowerCase().includes(debouncedCharity.toLowerCase()) ?? false;
-    //     const matchesDate = debouncedDate ? format(new Date(event.date), "yyyy-MM-dd") >= format(debouncedDate, "yyyy-MM-dd") : true;
-    //     return matchesName && matchesCharity && matchesDate;
-    // });
-
-
-    console.log(events)
-
     const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
     useEffect(() => {
-        if (debouncedName.length > 0) {
+        if (debouncedName && debouncedName.length > 0) {
             const initialEvents = initialData?.filter((event) => {
                 return event.title?.toLowerCase().includes(debouncedName.toLowerCase())
             })
             setEvents(initialEvents)
-        } else if (debouncedName.length === 0) {
+        } else if (debouncedName === "") {
             setEvents(initialData)
+            setName(null)
+
         }
-        if (debouncedCharity.length > 0) {
+        if (debouncedCharity && debouncedCharity.length > 0) {
             const initialEvents = initialData?.filter((event) => {
                 return event.charity?.toLowerCase().includes(debouncedCharity.toLowerCase())
             })
             setEvents(initialEvents)
-        } else if (debouncedCharity.length === 0) {
+        } else if (debouncedCharity === "") {
             setEvents(initialData)
+            setCharity(null)
         }
         if (debouncedDate) {
             const initialEvents = initialData?.filter((event) => {
@@ -74,6 +99,7 @@ export default function ListEvents({ initialData }: { initialData: any[] }) {
                 <div className="w-full sm:w-[280px] flex flex-col gap-2">
                     <Label>Event Name</Label>
                     <Input
+                        value={name || ""}
                         onChange={(e) => setName(e.target.value)}
                         className=" w-full focus:outline-none focus:ring-0 focus:border-none"
                     />
@@ -81,6 +107,7 @@ export default function ListEvents({ initialData }: { initialData: any[] }) {
                 <div className="w-full sm:w-[280px] flex flex-col gap-2">
                     <Label>Charity Name</Label>
                     <Input
+                        value={charity || ""}
                         onChange={(e) => setCharity(e.target.value)}
                         className="w-full focus:outline-none focus:ring-0 focus:border-none"
                     />
@@ -88,7 +115,7 @@ export default function ListEvents({ initialData }: { initialData: any[] }) {
                 <div className="w-full sm:w-[280px] flex flex-col gap-2">
                     <Label>Date</Label>
                     <div className="relative">
-                        <Popover >
+                        <Popover>
                             <PopoverTrigger asChild >
                                 <Button
                                     variant={"outline"}
@@ -104,14 +131,14 @@ export default function ListEvents({ initialData }: { initialData: any[] }) {
                             <PopoverContent className="w-auto p-0">
                                 <Calendar
                                     mode="single"
-                                    selected={date}
-                                    onSelect={setDate}
+                                    selected={date as unknown as Date}
+                                    onSelect={setDate as any}
                                     initialFocus
                                 />
                             </PopoverContent>
                         </Popover>
                         <button
-                            onClick={() => setDate(undefined)} // Clear the date
+                            onClick={() => setDate(undefined as any)} // Clear the date
                             disabled={!date}
                             className="ml-2 absolute top-1/2 -translate-y-1/2 right-3 bg-transparent disabled:opacity-50"
                         >
