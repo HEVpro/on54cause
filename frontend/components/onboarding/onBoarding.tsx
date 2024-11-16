@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import {
     Select,
     SelectContent,
@@ -17,16 +17,14 @@ import { AnimatePresence, motion } from "framer-motion";
 
 
 export default function OnBoarding() {
-    const [accountType, setAccountType] = useState<string>("");
-    const router = useRouter();
-
-
+    const [accountType, setAccountType] = useState<string>('')
+    const router = useRouter()
 
     const handleContinue = () => {
-        if (accountType === "charity") {
-            router.push("/onboarding/charity");
-        } else if (accountType === "individual") {
-            router.push("/onboarding/individual");
+        if (accountType === 'charity') {
+            router.push('/onboarding/charity')
+        } else if (accountType === 'individual') {
+            router.push('/onboarding/individual?isFromOnBoarding=true')
         }
     }
     return (
