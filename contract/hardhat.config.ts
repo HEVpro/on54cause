@@ -3,6 +3,7 @@ import "@nomicfoundation/hardhat-toolbox-viem";
 import "@nomicfoundation/hardhat-verify";
 import "hardhat-chai-matchers-viem";
 import "hardhat-gas-reporter";
+import "dotenv/config";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -16,7 +17,8 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      "not-used": "not-used",
+      "chiliz-spicy": "not-used",
+      "polygon-cardona": "not-used",
     },
     customChains: [
       {
@@ -27,7 +29,26 @@ const config: HardhatUserConfig = {
           browserURL: "https://explorer-ui.zkevm-testnet.com",
         },
       },
+      {
+        network: "chiliz-spicy",
+        chainId: 88882,
+        urls: {
+          apiURL:
+            "https://api.routescan.io/v2/network/testnet/evm/88882/etherscan",
+          browserURL: "https://testnet.chiliscan.com",
+        },
+      },
     ],
+  },
+  networks: {
+    "chiliz-spicy": {
+      url: "https://spicy-rpc.chiliz.com",
+      accounts: [process.env.PRIVATE_KEY!],
+    },
+    "polygon-cardona": {
+      url: process.env.ALCHEMY_POLYGON_CARDONA_URL!,
+      accounts: [process.env.PRIVATE_KEY!],
+    },
   },
 };
 
