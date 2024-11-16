@@ -37,7 +37,7 @@ export function DescriptionFlow() {
 
   return (
     <div
-      className="relative flex h-[500px] w-1/2 items-center justify-center overflow-hidden px-10"
+      className="relative flex h-[400px] md:h-[500px] w-full md:w-1/2 items-center justify-center overflow-hidden md:px-10"
       ref={containerRef}
     >
       <div className="flex size-full flex-col max-w-lg max-h-[200px] items-stretch justify-between gap-10">

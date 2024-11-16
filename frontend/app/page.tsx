@@ -12,12 +12,12 @@ export default function Home() {
         <div className="pb-20">
             <div className="relative flex h-[500px] w-full items-center justify-center overflow-hidden bg-background p-20">
                 <div className="z-50 flex flex-col items-center justify-center">
-                    <div className=" z-10 mb-4 whitespace-pre-wrap text-center text-6xl font-medium tracking-tighter  ">
+                    <h1 className=" z-10 mb-4 whitespace-pre-wrap text-center text-6xl font-medium tracking-tighter  ">
                         <TypingAnimation
                             className="text-5xl font-bold text-custom-green-500"
                             text="Make a Difference, One Link at a Time!"
                         />
-                    </div>
+                    </h1>
                     <p className="text-3xl mx-auto max-w-[44ch] text-center mb-8">
                         Join forces with charities, smash your fundraising
                         goals, and take part in events you love—all while

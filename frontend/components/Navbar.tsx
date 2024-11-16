@@ -37,7 +37,7 @@ export default function Navbar() {
                             shimmerSize="0.2em"
                             background="#f97f70"
                         >
-                            Click
+                            Login
                             <Image
                                 src="/glasses/glasses-square-teal.png"
                                 alt="nouns-glasses"
