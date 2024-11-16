@@ -5,19 +5,24 @@ import { IProvider, WALLET_ADAPTERS } from '@web3auth/base'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { log } from 'console'
+import { get } from 'http'
 
 export default function IndividualOnboarding() {
     const searchParams = useSearchParams()
     const isFromOnBoarding = searchParams.get('isFromOnBoarding')
-    const { login, loggedIn } = useWeb3AuthNoModalProvider()
+    const { login, loggedIn, getUserInfo } = useWeb3AuthNoModalProvider()
     const [isBeingRedirected, setIsBeingRedirected] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const router = useRouter()
 
+    const handleUser = async () => {
+        localStorage.setItem('user_type', 'individual')
+        // localStorage.setItem('user_data', JSON.stringify(user))
+        router.push('/events')
+    }
     useEffect(() => {
         if (loggedIn && !isBeingRedirected) {
-            router.push('/events')
+            handleUser()
         }
     }, [loggedIn, router])
 
