@@ -107,13 +107,13 @@ export default function CharitySocialInfo() {
                 animate={{ x: 0 }}
                 exit={{ x: '-50%' }}
                 transition={{ duration: 0.5, ease: 'linear' }}
-                className="z-50 absolute left-1/2 w-1/2 min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 bg-[#D4D7E1] rounded-xl"
+                className="md:z-50 absolute left-0 md:left-1/2 w-full md:w-1/2 min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center md:justify-end gap-10 p-10 bg-white rounded-xl"
             >
-                <p className="text-2xl">
+                <p className="max-md:hidden text-3xl text-custom-orange-500">
                     Tell us a bit about your charity so we can get you set up!
                 </p>
                 <Image
-                    className="mt-auto"
+                    className="max-md:opacity-30"
                     src="/nouns/noun-2.png"
                     alt="step1"
                     width={600}
@@ -126,7 +126,7 @@ export default function CharitySocialInfo() {
                 animate={{ x: 0 }}
                 exit={{ x: '50%' }}
                 transition={{ duration: 0.5, ease: 'linear' }}
-                className="z-0 absolute top-0 h-[calc(100vh-4rem)] w-1/2 flex flex-col justify-center items-center gap-4"
+                className="md:z-0 absolute top-0 h-[calc(100vh-4rem)] w-full md:w-1/2 flex flex-col justify-center items-center gap-4"
             >
                 <button
                     className="bg-transparent absolute left-0 top-0 border-none text-black mr-auto "
@@ -135,7 +135,7 @@ export default function CharitySocialInfo() {
                 >
                     <ChevronLeft />
                 </button>
-                <p className="text-center text-2xl">
+                <p className="text-center text-2xl max-md:px-2">
                     Let's get to know each other a bit better! I just have a few
                     more quick questions for you.
                 </p>

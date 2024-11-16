@@ -31,13 +31,13 @@ export default function CharitySignup() {
                 animate={{ x: 0 }}
                 exit={{ x: '50%' }}
                 transition={{ duration: 0.5, ease: 'linear' }}
-                className="z-50 w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 bg-[#D4D7E1] rounded-xl"
+                className="md:z-50 w-full md:w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center md:justify-end gap-10 p-10 bg-white rounded-xl"
             >
-                <p className="text-2xl">
+                <p className="max-md:hidden text-3xl text-custom-yellow-500">
                     Tell us a bit about your charity so we can get you set up!
                 </p>
                 <Image
-                    className="mt-auto"
+                    className="max-md:opacity-30"
                     src="/nouns/noun-2.png"
                     alt="step1"
                     width={600}
@@ -50,7 +50,7 @@ export default function CharitySignup() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: '-50%' }}
                 transition={{ duration: 0.5, ease: 'linear' }}
-                className=" w-1/2 h-[calc(100vh-4rem)] absolute left-1/2  flex-1 flex flex-col justify-center items-center gap-4 m-10"
+                className="md:w-1/2 w-full h-[calc(100vh-4rem)] absolute left-0 md:left-1/2 flex-1 flex flex-col justify-center items-center gap-4 md:m-10"
             >
                 <div className="flex flex-col items-center justify-center w-full">
                     <h1 className="text-4xl text-custom-green-500">

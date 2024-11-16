@@ -3,7 +3,7 @@ import { EventCard } from '@/components/EventCard'
 import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CalendarIcon, XIcon } from 'lucide-react'
+import { CalendarIcon, PlusIcon, XIcon } from 'lucide-react'
 import {
     Popover,
     PopoverTrigger,
@@ -20,6 +20,12 @@ import { useReadContract, useReadContracts, useChainId } from 'wagmi'
 import { abi } from '@/lib/wagmi/abi'
 import contracts from '@/lib/wagmi/contracts.json'
 import { Abi } from 'viem'
+import { TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
+import { Tooltip } from '@radix-ui/react-tooltip'
+import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
+import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export type EventData = {
     id: string
@@ -32,6 +38,9 @@ export type EventData = {
     fundraisings: string[]
 }
 export default function ListEvents() {
+    const pathname = usePathname()
+    const router = useRouter()
+
     const [name, setName] = useQueryState('name')
     const [charity, setCharity] = useQueryState('charity')
     const [date, setDate] = useQueryState('date', parseAsIsoDate)
@@ -41,31 +50,62 @@ export default function ListEvents() {
     const [debouncedCharity] = useDebounce(charity, 500)
     const [debouncedDate] = useDebounce(date, 500)
 
+    const [userType, setUserType] = useState<string | null>(null)
+    const { isLoggingIn } = useWeb3AuthSingleAuthProvider()
+    const { loggedIn } = useWeb3AuthNoModalProvider()
+
+    useEffect(() => {
+        const userTypeValue = localStorage.getItem('user_type')
+        if (userTypeValue) {
+            setUserType(userTypeValue)
+        }
+
+    }, [loggedIn, isLoggingIn, pathname])
+
     const mockEvents = [
         {
-            chainId: 88882,
-            id: '0x4fa3aa42d6ce45f3cd4cc97645180a486421a882219833f1bd8682192c2051b3',
+            chainId: 80002,
+            id: 'FAD1B407A85421DFCF42EBC67C0F19E428753E46BF9E35BAD1A325B1301BB26F',
         },
     ]
     const mappedEvents = mockEvents.map((event) => ({
         abi: abi as Abi, // Cast abi to the correct type
-        address: '0x0172e3262B9f676BECC2a5cDc7e82ab9d6D3298F' as `0x${string}`,
+        address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6' as `0x${string}`,
         args: [event.id],
         functionName: 'getEvent',
     }))
 
-    const { data } = useReadContracts({
-        contracts: mappedEvents,
-    })
+    // const { data } = useReadContracts({
+    //     contracts: [{
+    //         abi: abi as Abi, // Cast abi to the correct type
+    //         address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6',
+    //         args: ["FAD1B407A85421DFCF42EBC67C0F19E428753E46BF9E35BAD1A325B1301BB26F"],
+    //         functionName: 'getEvent',
+    //     }],
+    // })
 
-    useEffect(() => {
-        if (data) {
-            const formattedEvents = data.map((event) => {
-                return event.result
-            })
-            setEvents(formattedEvents as any[])
-        }
-    }, [data])
+    const data = [{
+        id: 'some-id', // Add a unique id
+        organiser: 'some-organiser', // Add an organiser
+        title: 'Test Event',
+        description: 'TestTest description for an amazing sports charity event',
+        date: 1716000000,
+        charity: 'Test Charity',
+        imgUrl: 'https://via.placeholder.com/150',
+        status: 1,
+        fundraisings: ['1', '2', '3'],
+    }]
+
+
+    // useEffect(() => {
+    //     if (data) {
+    //         const formattedEvents = data.map((event) => {
+    //             console.log('event', event)
+    //             return event
+    //         })
+    //         setEvents(formattedEvents as any[])
+    //     }
+    // }, [data])
     console.log('events', data)
 
     const colors = [
@@ -80,7 +120,7 @@ export default function ListEvents() {
 
     useEffect(() => {
         const formattedEvents = data?.map((event) => {
-            return event.result
+            return event
         }) as EventData[]
         setEvents(formattedEvents as any[])
         if (debouncedName && debouncedName.length > 0) {
@@ -110,7 +150,7 @@ export default function ListEvents() {
                 return (
                     debouncedDate &&
                     format(event.date, 'yyyy-MM-dd') >=
-                        format(debouncedDate, 'yyyy-MM-dd')
+                    format(debouncedDate, 'yyyy-MM-dd')
                 )
             })
             setEvents(filteredEvents)
@@ -126,9 +166,9 @@ export default function ListEvents() {
         <>
             <div
                 className={cn(
-                    'w-full flex-wrap gap-4 py-7 px-4 grid grid-cols-4 align-bottom items-end'
+                    'w-full flex-wrap gap-4 py-7 px-4 grid grid-cols-4 align-bottom items-end',
                     //TODO: if charity create event
-                    // usertType === 'charity' ? 'grid-cols-4' : 'grid-cols-3'
+                    userType === 'charity' ? 'grid-cols-4' : 'grid-cols-3'
                 )}
             >
                 <div className="w-full col-span-1 flex flex-col gap-2">
@@ -187,14 +227,27 @@ export default function ListEvents() {
                     </div>
                 </div>
                 {/* TODO: if userType is 'charity */}
-                <div className="col-span-1 w-full">
-                    <Button className="w-full">Create Event</Button>
-                </div>
+                {userType === 'charity' && (
+                    <div className="col-span-1 w-fit ml-auto rounded-xl">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Button onClick={() => router.push('/createevent')} className="w-full">
+                                        <PlusIcon className=" text-white" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-black m-1 p-2  text-white rounded-md">
+                                    <p>Create Event</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                )}
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 p-4">
                 {events?.map((event, index) => (
                     <EventCard
-                        key={event.id}
+                        key={event?.id}
                         data={event}
                         color={getRandomColor()}
                     />
