@@ -23,14 +23,6 @@ const config: HardhatUserConfig = {
     },
     customChains: [
       {
-        network: "polygon-cardona",
-        chainId: 2442,
-        urls: {
-          apiURL: "https://explorer-ui.zkevm-testnet.com/api",
-          browserURL: "https://explorer-ui.zkevm-testnet.com",
-        },
-      },
-      {
         network: "chiliz-spicy",
         chainId: 88882,
         urls: {
