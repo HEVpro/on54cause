@@ -16,14 +16,87 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import { cn } from '@/lib/utils'
+import { EventData } from '@/components/ListEvents'
 
 export function EventCard({
     data,
     color,
 }: {
-    data: any
+    data: EventData
     color: Record<string, string>
 }) {
+    const pathname = usePathname()
+    const router = useRouter()
+    const [isLoading, setIsLoading] = useState(true)
+    const [session, setSession] = useState<string | null>(null)
+    const [userType, setUserType] = useState<string | null>(null)
+
+    const { isLoggingIn } = useWeb3AuthSingleAuthProvider()
+    const { loggedIn } = useWeb3AuthNoModalProvider()
+
+    useEffect(() => {
+        const authStoreIndividual = localStorage.getItem('auth_store')
+        const authStoreCharity = localStorage.getItem('sfa_store_eip_core_kit')
+        const userTypeValue = localStorage.getItem('user_type')
+        if (authStoreIndividual) {
+            const store = JSON.parse(authStoreIndividual)
+            setSession(store.sessionId)
+            localStorage.removeItem('sfa_store_eip_core_kit')
+            setIsLoading(false)
+        }
+        if (authStoreCharity) {
+            const store = JSON.parse(authStoreCharity)
+            setSession(store.sessionId)
+            localStorage.removeItem('auth_store')
+            setIsLoading(false)
+        }
+        if (userTypeValue) {
+            setUserType(userTypeValue)
+            setIsLoading(false)
+        }
+        if (!userTypeValue && !authStoreCharity && !authStoreIndividual) {
+            setIsLoading(false)
+        }
+    }, [loggedIn, isLoggingIn, pathname])
+
+    const menuItems = [
+        {
+            title: 'Complete Event',
+            onClick: () => {
+                router.push('/events')
+            },
+            type: 'charity',
+            isDestructive: false,
+        },
+        {
+            title: 'Cancel Event',
+            onClick: () => {
+                router.push('/events')
+            },
+            type: 'charity',
+            isDestructive: true,
+        },
+        {
+            title: 'Create link',
+            onClick: () => {
+                router.push(
+                    `/events/new-link?eventId=${
+                        data.id
+                    }&eventTitle=${encodeURIComponent(
+                        data.title
+                    )}&description=${encodeURIComponent(
+                        data.description
+                    )}&date=${encodeURIComponent(
+                        data.date
+                    )}&organizer=${encodeURIComponent(
+                        data.organiser
+                    )}&imgUrl=${encodeURIComponent(data.imgUrl)}`
+                )
+            },
+            type: 'individual',
+            isDestructive: false,
+        },
+    ]
     return (
         <MagicCard
             className={`col-span-2 relative w-full cursor-pointer flex flex-col gap-6 shadow-2xl whitespace-nowrap ${color.class}`}

@@ -21,7 +21,7 @@ import { abi } from '@/lib/wagmi/abi'
 import contracts from '@/lib/wagmi/contracts.json'
 import { Abi } from 'viem'
 
-type EventData = {
+export type EventData = {
     id: string
     organiser: string
     date: number
