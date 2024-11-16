@@ -17,6 +17,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
+      polygonAmoy: process.env.POLYGONSCAN_API_KEY!,
       "chiliz-spicy": "not-used",
       "polygon-cardona": "not-used",
     },
@@ -47,6 +48,10 @@ const config: HardhatUserConfig = {
     },
     "polygon-cardona": {
       url: process.env.ALCHEMY_POLYGON_CARDONA_URL!,
+      accounts: [process.env.PRIVATE_KEY!],
+    },
+    "polygon-amoy": {
+      url: process.env.ALCHEMY_POLYGON_AMOY_URL!,
       accounts: [process.env.PRIVATE_KEY!],
     },
   },
