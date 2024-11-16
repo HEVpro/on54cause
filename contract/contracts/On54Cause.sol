@@ -68,6 +68,32 @@ contract On54Cause is Ownable {
     event TokenBlacklisted(IERC20 token);
     event DonationReceived(bytes32 fundraisingId, uint256 amount, IERC20 token);
 
+    function adminCreateEvent(
+        uint32 _date,
+        string memory _title,
+        string memory _description,
+        string memory _imgUrl,
+        address _organiser
+    ) public onlyOwner {
+        require(_date > block.timestamp, "Event date is in the past");
+        require(bytes(_title).length > 0, "Title cannot be empty");
+        require(bytes(_description).length > 0, "Description cannot be empty");
+        require(bytes(_imgUrl).length > 0, "Image URL cannot be empty");
+        bytes32 _id = keccak256(abi.encode(_title, _organiser));
+        Event memory _event = Event({
+            id: _id,
+            organiser: _organiser,
+            date: _date,
+            title: _title,
+            description: _description,
+            imgUrl: _imgUrl,
+            status: Status.OPEN,
+            fundraisings: new bytes32[](0)
+        });
+        events[_id] = _event;
+        emit EventCreated(_event);
+    }
+
     function createEvent(
         uint32 _date,
         string memory _title,
