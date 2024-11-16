@@ -16,17 +16,17 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import { cn } from '@/lib/utils'
+import { EventData } from '@/components/ListEvents'
 
 export function EventCard({
     data,
     color,
 }: {
-    data: any
+    data: EventData
     color: Record<string, string>
 }) {
     const pathname = usePathname()
     const router = useRouter()
-
     const [isLoading, setIsLoading] = useState(true)
     const [session, setSession] = useState<string | null>(null)
     const [userType, setUserType] = useState<string | null>(null)
@@ -59,7 +59,6 @@ export function EventCard({
         }
     }, [loggedIn, isLoggingIn, pathname])
 
-    //TODO: torras haz charity
     const menuItems = [
         {
             title: 'Complete Event',
@@ -80,13 +79,24 @@ export function EventCard({
         {
             title: 'Create link',
             onClick: () => {
-                router.push('/events/new-link')
+                router.push(
+                    `/events/new-link?eventId=${
+                        data.id
+                    }&eventTitle=${encodeURIComponent(
+                        data.title
+                    )}&description=${encodeURIComponent(
+                        data.description
+                    )}&date=${encodeURIComponent(
+                        data.date
+                    )}&organizer=${encodeURIComponent(
+                        data.organiser
+                    )}&imgUrl=${encodeURIComponent(data.imgUrl)}`
+                )
             },
             type: 'individual',
             isDestructive: false,
         },
     ]
-    console.log('userTye', userType)
     return (
         <MagicCard
             className={`col-span-2 relative w-full cursor-pointer flex flex-col gap-6 shadow-2xl whitespace-nowrap ${color.class}`}
@@ -116,7 +126,7 @@ export function EventCard({
 
             <CardTitle className="flex items-center gap-2 w-full">
                 <Avatar className="border-2 border-custom-orange-400">
-                    <AvatarImage src={data?.image_url} alt={data?.title} />
+                    <AvatarImage src={data?.imgUrl} alt={data?.title} />
                     <AvatarFallback className="text-sm ">o54</AvatarFallback>
                 </Avatar>
                 <p className="truncate line-clamp-1">{data?.title}</p>

@@ -27,7 +27,7 @@ import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProv
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 
-type EventData = {
+export type EventData = {
     id: string
     organiser: string
     date: number
