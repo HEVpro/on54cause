@@ -46,8 +46,6 @@ export const useWeb3AuthSingleAuthProvider = () => {
                         whiteLabel: {
                             logoLight:
                                 'https://web3auth.io/images/web3auth-logo.svg',
-                            logoDark:
-                                'https://web3auth.io/images/web3auth-logo.svg',
                         },
                     },
                 })
@@ -71,6 +69,8 @@ export const useWeb3AuthSingleAuthProvider = () => {
 
         init()
     }, [])
+
+    console.log('wsPlugin', wsPlugin)
 
     const onSuccess = async (response: CredentialResponse) => {
         try {
@@ -99,6 +99,22 @@ export const useWeb3AuthSingleAuthProvider = () => {
             setIsLoggingIn(false)
             console.error('is already enabled', err)
         }
+    }
+
+    const initializePlugins = (web3authSfa: Web3Auth) => {
+        const pkPlugin = new PasskeysPlugin({ buildEnv: 'testing' })
+        web3authSfa.addPlugin(pkPlugin)
+        setPkPlugin(pkPlugin)
+
+        const wsPlugin = new WalletServicesPlugin({
+            walletInitOptions: {
+                whiteLabel: {
+                    logoLight: 'https://web3auth.io/images/web3auth-logo.svg',
+                },
+            },
+        })
+        web3authSfa.addPlugin(wsPlugin)
+        setWsPlugin(wsPlugin)
     }
 
     const loginWithPasskey = async () => {
@@ -182,20 +198,29 @@ export const useWeb3AuthSingleAuthProvider = () => {
         return await pkPlugin.listAllPasskeys()
     }
 
-    const showCheckout = async () => {
-        if (!wsPlugin) {
-            uiConsole('wallet services plugin not initialized yet')
-            return
+    const connectPlugin = async (sessionId: string) => {
+        try {
+            const connectionOptions = { sessionId } // Use the sessionId for connection
+            if (!wsPlugin) {
+                uiConsole('Wallet services plugin instance is not available')
+                return
+            }
+            await wsPlugin.connect(connectionOptions)
+            uiConsole('Wallet services plugin connected')
+        } catch (error) {
+            uiConsole('Failed to connect wallet services plugin', error)
         }
-        await wsPlugin.showCheckout()
     }
 
-    const showWalletUI = async () => {
+    const showCheckout = async (sessionId: string) => {
         if (!wsPlugin) {
-            uiConsole('wallet services plugin not initialized yet')
+            uiConsole('Wallet services plugin not initialized yet')
             return
         }
-        await wsPlugin.showWalletUi()
+        await wsPlugin.connect({ sessionId }) // Connect to the sessionId
+        await wsPlugin.showCheckout({
+            show: true,
+        }) // Opens the TopUp modal
     }
 
     const showWalletScanner = async () => {
@@ -217,5 +242,7 @@ export const useWeb3AuthSingleAuthProvider = () => {
         registerPasskey,
         listAllPasskeys,
         getUserInfo,
+        connectPlugin,
+        showCheckout,
     }
 }
