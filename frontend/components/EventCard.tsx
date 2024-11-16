@@ -1,26 +1,23 @@
-import { MenuIcon } from "lucide-react";
-
 "use client"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardDescription, CardFooter, CardTitle } from '@/components/ui/card'
 import { MagicCard } from '@/components/ui/magic-card'
+import { format } from 'date-fns'
+
 
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { EllipsisVerticalIcon } from 'lucide-react'
 
 
-
-export function EventCard({ type = "charity", color }: { type?: "charity" | "individual", color: Record<string, string> }) {
+export function EventCard({ data, color }: { data: any, color: Record<string, string> }) {
     return (
         <MagicCard
-            className={`relative w-full cursor-pointer flex flex-col shadow-2xl whitespace-nowrap ${color.class}`}
+            className={`relative w-full cursor-pointer flex flex-col gap-6 shadow-2xl whitespace-nowrap ${color.class}`}
             gradientColor={color.code}
         >
             <DropdownMenu>
@@ -28,14 +25,11 @@ export function EventCard({ type = "charity", color }: { type?: "charity" | "ind
                     <EllipsisVerticalIcon />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className={`${color.class}`}>
-                    {type === "charity" ? (
-                        <>
-                            <DropdownMenuItem>Claim money</DropdownMenuItem>
-                            <DropdownMenuItem>Delete event</DropdownMenuItem>
-                        </>
-                    ) : (
-                        <DropdownMenuItem>Create event</DropdownMenuItem>
-                    )}
+
+                    <DropdownMenuItem>Claim money</DropdownMenuItem>
+                    <DropdownMenuItem>Delete event</DropdownMenuItem>
+                    <DropdownMenuItem>Create event</DropdownMenuItem>
+
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -44,14 +38,16 @@ export function EventCard({ type = "charity", color }: { type?: "charity" | "ind
                     <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                     <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
-                <p>event name</p>
+                <p>{data.name}</p>
             </CardTitle>
-            <CardDescription>event description</CardDescription>
+            <CardDescription className="w-full h-auto text-sm line-clamp-3  text-ellipsis whitespace-normal">
+                {data.description}
+            </CardDescription>
 
 
             <CardFooter className="flex justify-between p-0">
-                <p>charity name</p>
-                <p>event date</p>
+                <p>{data.charity}</p>
+                <p>{format(data.date, "dd/MM/yyyy")}</p>
             </CardFooter>
 
         </MagicCard>
