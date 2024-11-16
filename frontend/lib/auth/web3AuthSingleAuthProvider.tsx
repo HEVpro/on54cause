@@ -57,20 +57,16 @@ export const useWeb3AuthSingleAuthProvider = () => {
                 web3authSfa?.addPlugin(wsPlugin)
                 setWsPlugin(wsPlugin)
                 web3authSfa.on(ADAPTER_EVENTS.CONNECTED, (data) => {
-                    console.log('sfa:connected', data)
-                    console.log('sfa:state', web3authSfa?.state)
                     setProvider(web3authSfa.provider)
                     if (web3authSfa.state) {
                         setIsLoggingIn(true)
                     }
                 })
-                // web3authSfa.on(ADAPTER_EVENTS.DISCONNECTED, () => {
-                //     console.log('sfa:disconnected')
-                //     setProvider(null)
-                // })
+                web3authSfa.on(ADAPTER_EVENTS.DISCONNECTED, () => {
+                    setProvider(null)
+                })
                 await web3authSfa.init()
                 setWeb3authSFAuth(web3authSfa)
-                // (window as any).web3auth = web3authSfa;
             } catch (error) {
                 console.error(error)
             }
@@ -87,37 +83,42 @@ export const useWeb3AuthSingleAuthProvider = () => {
             }
             setIsLoggingIn(true)
             const idToken = response.credential
-            // console.log(idToken);
+            console.info('idToken -->', idToken)
             if (!idToken) {
                 setIsLoggingIn(false)
                 return
             }
             const { payload } = decodeToken(idToken)
+            console.info('payload -->', payload)
             await web3authSFAuth.connect({
                 verifier,
                 verifierId: (payload as any)?.email,
                 idToken: idToken!,
             })
-            setIsLoggingIn(false)
+            // setIsLoggingIn(false)
         } catch (err) {
             // Single Factor Auth SDK throws an error if the user has already enabled MFA
             // One can use the Web3AuthNoModal SDK to handle this case
             setIsLoggingIn(false)
-            console.error(err)
+            console.error('is already enabled', err)
         }
     }
 
     const loginWithPasskey = async () => {
         try {
-            setIsLoggingIn(true)
             if (!pkPlugin) throw new Error('Passkey plugin not initialized')
             const result = shouldSupportPasskey()
             if (!result.isBrowserSupported) {
                 uiConsole('Browser not supported')
                 return
             }
-            await pkPlugin.loginWithPasskey()
-            console.info('Passkey logged in successfully')
+            const res = await pkPlugin.loginWithPasskey()
+            if (res) {
+                console.info('Passkey logged in successfully')
+                setIsLoggingIn(true)
+                return { isLoggedIn: true }
+            }
+            setIsLoggingIn(false)
         } catch (error) {
             console.error((error as Error).message)
             console.error((error as Error).message)
@@ -130,7 +131,7 @@ export const useWeb3AuthSingleAuthProvider = () => {
             return
         }
         const getUserInfo = await web3authSFAuth.getUserInfo()
-        uiConsole(getUserInfo)
+        return getUserInfo
     }
 
     const googleLogout = async () => {
@@ -151,7 +152,6 @@ export const useWeb3AuthSingleAuthProvider = () => {
             return
         }
         await web3authSFAuth.logout()
-        router.push('/')
     }
 
     const switchChain = async () => {
@@ -191,8 +191,7 @@ export const useWeb3AuthSingleAuthProvider = () => {
             uiConsole('plugin not initialized yet')
             return
         }
-        const res = await pkPlugin.listAllPasskeys()
-        console.log('pkPlugin.listAllPasskeys -->', res)
+        return await pkPlugin.listAllPasskeys()
     }
 
     const showCheckout = async () => {
@@ -229,5 +228,6 @@ export const useWeb3AuthSingleAuthProvider = () => {
         isLoggingIn,
         registerPasskey,
         listAllPasskeys,
+        getUserInfo,
     }
 }

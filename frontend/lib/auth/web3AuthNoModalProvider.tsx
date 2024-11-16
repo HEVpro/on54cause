@@ -12,14 +12,12 @@ import {
 } from '@web3auth/base'
 import { AuthAdapter } from '@web3auth/auth-adapter'
 import { getPublicCompressed } from '@toruslabs/eccrypto'
-import { useRouter } from 'next/navigation'
 import { clientId, chainConfig } from '@/lib/constants'
 
 export const useWeb3AuthNoModalProvider = () => {
     const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null)
     const [provider, setProvider] = useState<IProvider | null>(null)
     const [loggedIn, setLoggedIn] = useState<boolean | null>(false)
-    const router = useRouter()
 
     function uiConsole(...args: any[]): void {
         const el = document.querySelector('#console>p')
@@ -33,7 +31,7 @@ export const useWeb3AuthNoModalProvider = () => {
             return
         }
         const user = await web3auth.getUserInfo()
-        uiConsole(user)
+        return user
     }
 
     const validateIdToken = async () => {
@@ -140,8 +138,6 @@ export const useWeb3AuthNoModalProvider = () => {
         })
         setProvider(null)
         setLoggedIn(false)
-
-        router.push('/')
     }
 
     return {
@@ -151,5 +147,6 @@ export const useWeb3AuthNoModalProvider = () => {
         login,
         loggedIn,
         logout,
+        getUserInfo,
     }
 }

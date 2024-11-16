@@ -3,28 +3,25 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
-import { GoogleLogin } from '@react-oauth/google'
-import { useEffect } from 'react'
+import {
+    GoogleLogin,
+    useGoogleLogin,
+    CredentialResponse,
+} from '@react-oauth/google'
+import { useEffect, useState } from 'react'
 import { useWizard } from 'react-use-wizard'
 import { Button } from '@/components/ui/button'
-import { KeyIcon } from 'lucide-react'
+import { FileKey2Icon, FolderKeyIcon, KeyIcon } from 'lucide-react'
+import ShimmerButton from '@/components/ui/shimmer-button'
+import { get } from 'http'
+import next from 'next'
+import { set } from 'react-hook-form'
 
 export default function CharitySignup() {
-    const { isLoggingIn, loginWithPasskey, registerPasskey, listAllPasskeys } =
+    const [loading, setLoading] = useState(false)
+    const { loginWithPasskey, registerPasskey, listAllPasskeys } =
         useWeb3AuthSingleAuthProvider()
     const { nextStep } = useWizard()
-
-    useEffect(() => {
-        if (isLoggingIn) {
-            const timeoutId = setTimeout(() => {
-                nextStep()
-            }, 4500)
-
-            return () => clearTimeout(timeoutId) // Cleanup the timeout when the component unmounts or if isLoggingIn changes
-        }
-    }, [isLoggingIn])
-
-    console.log('listAllPasskeys -->', listAllPasskeys())
 
     return (
         <>
@@ -55,27 +52,59 @@ export default function CharitySignup() {
                 transition={{ duration: 0.5, ease: 'linear' }}
                 className=" w-1/2 h-[calc(100vh-4rem)] absolute left-1/2  flex-1 flex flex-col justify-center items-center gap-4 m-10"
             >
-                <div className="flex flex-col items-center justify-center gap-4 w-full">
+                <div className="flex flex-col items-center justify-center w-full">
                     <h1 className="text-4xl text-custom-green-500">
                         Let's start your journey
                     </h1>
-                    <p className="text-lg">
+                    <p className="text-lg max-w-sm text-center mt-6">
                         You are a charity, we are a cause. Let's get you set up
                         with a secure login.
                     </p>
-
-                    <button onClick={loginWithPasskey} className="card passkey">
-                        Login with Passkey
-                    </button>
-                    <p>Don't have passkeys yet? You can register them here.</p>
-                    <Button
-                        variant="outline"
-                        onClick={registerPasskey}
-                        className="flex items-center justify-center gap-4"
+                    <ShimmerButton
+                        borderRadius="15px"
+                        className=" h-12 w-fit min-w-[150px] gap-4 text-lg hover:scale-105 transition duration-300 ease-in-out flex items-center justify-center"
+                        shimmerColor="#f97f70"
+                        shimmerSize="0.2em"
+                        background="#e01a4f"
+                        disabled={loading}
+                        onClick={async () => {
+                            setLoading(true)
+                            const res = await loginWithPasskey()
+                            if (res?.isLoggedIn) {
+                                setLoading(false)
+                                localStorage.setItem('user_type', 'charity')
+                                nextStep()
+                            }
+                            setLoading(false)
+                        }}
                     >
-                        <KeyIcon className="h-6 w-6" />
+                        {loading ? (
+                            <p>Loading...</p>
+                        ) : (
+                            <>
+                                <FileKey2Icon className="h-6 w-6 stroke-custom-green-500" />
+                                <p className="pt-0.5">Login with Passkey</p>
+                            </>
+                        )}
+                    </ShimmerButton>
+                    <p className="text-sm max-w-xs text-center mt-16 text-gray-500">
+                        Don't have passkeys yet? You can register them here.
+                        Then click on login with passkey.
+                    </p>
+                    <ShimmerButton
+                        borderRadius="15px"
+                        className="mt-2 h-10 w-fit gap-4 text-lg hover:scale-105 transition duration-300 ease-in-out flex items-center justify-center text-custom-green-400"
+                        shimmerColor="#244455"
+                        shimmerSize="0.2em"
+                        background="#ffcfc9"
+                        disabled={loading}
+                        onClick={async () => {
+                            registerPasskey()
+                        }}
+                    >
+                        <FolderKeyIcon className="h-6 w-6 stroke-custom-green-500" />
                         Register new Passkey
-                    </Button>
+                    </ShimmerButton>
                 </div>
             </motion.div>
         </>
