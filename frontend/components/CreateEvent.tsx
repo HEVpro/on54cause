@@ -118,7 +118,7 @@ export default function CreateEvent() {
                                             <Button
                                                 variant={"outline"}
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-normal",
+                                                    " pl-3 text-left font-normal",
                                                     !field.value && "text-muted-foreground"
                                                 )}
                                             >
@@ -143,9 +143,6 @@ export default function CreateEvent() {
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                <FormDescription>
-                                    Your date of birth is used to calculate your age.
-                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
