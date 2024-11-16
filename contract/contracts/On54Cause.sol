@@ -53,7 +53,12 @@ contract On54Cause is Ownable {
     // charity -> token -> balance
     mapping(address => mapping(IERC20 => uint256)) public charityBalances;
 
-    event EventCreated(Event eventDetails);
+    event EventCreated(
+        bytes32 id,
+        string title,
+        string description,
+        address organiser
+    );
     event FundraisingCreated(
         bytes32 fundraisingId,
         uint256 targetAmount,
@@ -62,8 +67,8 @@ contract On54Cause is Ownable {
         Status status,
         bytes32 associatedEvent
     );
-    event EventCompleted(Event eventDetails);
-    event EventCancelled(Event eventDetails);
+    event EventCompleted(bytes32 id, string title, address organiser);
+    event EventCancelled(bytes32 id, string title, address organiser);
     event TokenWhitelisted(IERC20 token);
     event TokenBlacklisted(IERC20 token);
     event DonationReceived(bytes32 fundraisingId, uint256 amount, IERC20 token);
@@ -91,7 +96,7 @@ contract On54Cause is Ownable {
             fundraisings: new bytes32[](0)
         });
         events[_id] = _event;
-        emit EventCreated(_event);
+        emit EventCreated(_id, _title, _description, _organiser);
     }
 
     function createEvent(
@@ -116,7 +121,7 @@ contract On54Cause is Ownable {
             fundraisings: new bytes32[](0)
         });
         events[_id] = _event;
-        emit EventCreated(_event);
+        emit EventCreated(_id, _title, _description, msg.sender);
     }
 
     function getEvent(bytes32 _id) public view returns (Event memory) {
@@ -141,7 +146,11 @@ contract On54Cause is Ownable {
                 .amount;
         }
 
-        emit EventCancelled(events[_event]);
+        emit EventCancelled(
+            events[_event].id,
+            events[_event].title,
+            events[_event].organiser
+        );
     }
 
     function getEventTokensRaised(
@@ -197,7 +206,11 @@ contract On54Cause is Ownable {
             );
         }
 
-        emit EventCompleted(events[_event]);
+        emit EventCompleted(
+            events[_event].id,
+            events[_event].title,
+            events[_event].organiser
+        );
     }
 
     function createFundraising(
