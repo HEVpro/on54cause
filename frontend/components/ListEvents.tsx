@@ -7,19 +7,20 @@ import { CalendarIcon, XIcon } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useDebounce } from 'use-debounce';
 
 
-export default function ListEvents() {
+export default function ListEvents({ initialData }: { initialData: any[] }) {
     const [name, setName] = useState("")
     const [charity, setCharity] = useState("")
     const [date, setDate] = useState<Date>()
-    const [debouncedName] = useDebounce(name, 700)
-    const [debouncedCharity] = useDebounce(charity, 700)
-    const [debouncedDate] = useDebounce(date, 700)
+    const [events, setEvents] = useState(initialData)
 
+    const [debouncedName] = useDebounce(name, 500);
+    const [debouncedCharity] = useDebounce(charity, 500);
+    const [debouncedDate] = useDebounce(date, 500);
 
     const colors = [
         { class: 'border-custom-green-500', code: "#132b3910" },
@@ -28,24 +29,44 @@ export default function ListEvents() {
         { class: 'border-custom-red-400', code: "#4d041d10" }
     ];
 
-    const filterEvents = () => {
-        return events.filter((event) => {
-            const matchesName = event.name.toLowerCase().includes(debouncedName.toLowerCase());
-            const matchesCharity = event.charity.toLowerCase().includes(debouncedCharity.toLowerCase());
-            const matchesDate = debouncedDate ? format(new Date(event.date), "yyyy-MM-dd") >= format(debouncedDate, "yyyy-MM-dd") : true;
-            return matchesName && matchesCharity && matchesDate;
-        });
-    };
+    // const filteredEvents = events?.filter((event) => {
+    //     const matchesName = event.name?.toLowerCase().includes(debouncedName.toLowerCase()) ?? false;
+    //     const matchesCharity = event.charity?.toLowerCase().includes(debouncedCharity.toLowerCase()) ?? false;
+    //     const matchesDate = debouncedDate ? format(new Date(event.date), "yyyy-MM-dd") >= format(debouncedDate, "yyyy-MM-dd") : true;
+    //     return matchesName && matchesCharity && matchesDate;
+    // });
 
-    const events = [
-        { name: 'Charity Gala', charity: 'save the children', date: new Date("2024-11-23"), description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." },
-        { name: 'Individual Meetup', charity: 'UNICEF', date: new Date("2024-01-02"), description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." },
-        { name: 'Run for a cause', charity: 'Company 3', date: new Date("2025-07-15"), description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." },
-        // Add more events as needed
-    ];
 
+    console.log(events)
 
     const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+
+    useEffect(() => {
+        if (debouncedName.length > 0) {
+            const initialEvents = initialData?.filter((event) => {
+                return event.title?.toLowerCase().includes(debouncedName.toLowerCase())
+            })
+            setEvents(initialEvents)
+        } else if (debouncedName.length === 0) {
+            setEvents(initialData)
+        }
+        if (debouncedCharity.length > 0) {
+            const initialEvents = initialData?.filter((event) => {
+                return event.charity?.toLowerCase().includes(debouncedCharity.toLowerCase())
+            })
+            setEvents(initialEvents)
+        } else if (debouncedCharity.length === 0) {
+            setEvents(initialData)
+        }
+        if (debouncedDate) {
+            const initialEvents = initialData?.filter((event) => {
+                return debouncedDate && format(event.date, "yyyy-MM-dd") >= format(debouncedDate, "yyyy-MM-dd")
+            })
+            setEvents(initialEvents)
+        } else if (debouncedDate === undefined) {
+            setEvents(initialData)
+        }
+    }, [debouncedName, debouncedCharity, debouncedDate])
 
     return (
         <>
@@ -99,9 +120,9 @@ export default function ListEvents() {
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 p-4 md:p-8">
-                {filterEvents().map((event) => (
-                    <EventCard data={event} key={event.name} color={getRandomColor()} />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 p-4">
+                {events?.map((event, index) => (
+                    <EventCard key={index} data={event} color={getRandomColor()} />
                 ))}
             </div>
         </>

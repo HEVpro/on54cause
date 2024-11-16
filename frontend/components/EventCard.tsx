@@ -35,19 +35,19 @@ export function EventCard({ data, color }: { data: any, color: Record<string, st
 
             <CardTitle className="flex items-center gap-2 w-full">
                 <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage src={data?.image_url} alt={data?.title} />
+                    <AvatarFallback>54</AvatarFallback>
                 </Avatar>
-                <p>{data.name}</p>
+                <p>{data?.title}</p>
             </CardTitle>
             <CardDescription className="w-full h-auto text-sm line-clamp-3  text-ellipsis whitespace-normal">
-                {data.description}
+                {data?.description}
             </CardDescription>
 
 
             <CardFooter className="flex justify-between p-0">
-                <p>{data.charity}</p>
-                <p>{format(data.date, "dd/MM/yyyy")}</p>
+                <p>{data?.title}</p>
+                <p>{format(new Date(), "dd/MM/yyyy")}</p>
             </CardFooter>
 
         </MagicCard>
