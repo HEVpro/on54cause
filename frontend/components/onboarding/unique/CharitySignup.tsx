@@ -31,7 +31,7 @@ export default function CharitySignup() {
                 animate={{ x: 0 }}
                 exit={{ x: '50%' }}
                 transition={{ duration: 0.5, ease: 'linear' }}
-                className="z-50 w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 bg-[#D4D7E1] rounded-xl"
+                className="z-50 w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 rounded-xl"
             >
                 <p className="text-2xl">
                     Tell us a bit about your charity so we can get you set up!

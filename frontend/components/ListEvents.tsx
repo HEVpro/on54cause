@@ -33,7 +33,6 @@ export default function ListEvents({ initialData }: { initialData: any[] }) {
     const [debouncedCharity] = useDebounce(charity, 500);
     const [debouncedDate] = useDebounce(date, 500);
 
-
     const mockEvents = [{
         chainId: 88882,
         id: "0x4fa3aa42d6ce45f3cd4cc97645180a486421a882219833f1bd8682192c2051b3"
