@@ -17,3 +17,5 @@ export const chainConfig = {
     logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
 }
 export const verifier = 'on54-cause-verifier'
+
+export const contractAddress = '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6'

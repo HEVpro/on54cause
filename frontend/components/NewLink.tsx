@@ -22,8 +22,13 @@ import ShimmerButton from './ui/shimmer-button'
 import { parseUnits, stringToHex } from 'viem'
 import { abi } from '@/lib/wagmi/abi'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
+import { contractAddress } from '@/lib/constants'
+import { useWaitForTransactionReceipt } from 'wagmi'
 
 export default function NewLink() {
+    const exampleFundraisingId =
+        'https://on54cause.vercel.app/donate/21F43E37FDABABED814F1CD4DDEAC62880B0D329F6D8F0500060DC02A650E35D'
+
     const searchParams = useSearchParams()
     const eventId = searchParams.get('eventId')
     const eventTitle = searchParams.get('eventTitle')
@@ -32,6 +37,28 @@ export default function NewLink() {
     const organizer = searchParams.get('organizer')
     const imgUrl = searchParams.get('imgUrl')
     const { userAddress, writeContract } = useWeb3AuthNoModalProvider()
+    const [fundraisingLink, setFundraisingLink] = useState<string | null>(
+        exampleFundraisingId
+    )
+    const [isConfirming, setIsConfiring] = useState(false)
+    const [transactionHash, setTransactionHash] = useState('')
+
+    const result = useWaitForTransactionReceipt({
+        hash: transactionHash as `0x${string}`,
+    })
+
+    console.log('result hash -->', result)
+
+    useEffect(() => {
+        if (result && result.data) {
+            setIsConfiring(false)
+            setFundraisingLink(
+                'https://on54cause.vercel.app/donate/' +
+                    //@ts-ignore
+                    result.data.fundraisingId
+            )
+        }
+    }, [result])
 
     const formattedDate = eventDate
         ? new Intl.DateTimeFormat('en-GB', {
@@ -53,6 +80,7 @@ export default function NewLink() {
             minimumAmount: 0, // Default to 0 as it should be a number.
         },
     })
+    console.info('userAddress -->', userAddress)
 
     function onSubmit(data: z.infer<typeof FormSchema>, event: any) {
         event.preventDefault()
@@ -61,19 +89,26 @@ export default function NewLink() {
 
         console.info('formattedAmount -->', formattedAmount)
         console.info('eventId -->', eventId)
-        console.info('userAddress -->', userAddress)
         console.info('organizer -->', organizer)
+        console.info('userAddress -->', userAddress)
         console.info('writing event...')
 
-        const contractAdress = '0x0172e3262B9f676BECC2a5cDc7e82ab9d6D3298F'
-        writeContract(abi as any, contractAdress, 'createFundraising', [
+        writeContract(abi as any, contractAddress, 'createFundraising', [
             formattedAmount,
             eventId,
             userAddress,
             organizer,
         ])
-            .then((result) => {
+            .then((result: any) => {
                 console.info('writeContract result -->', result)
+                if (
+                    result &&
+                    typeof result === 'object' &&
+                    'transactionHash' in result
+                ) {
+                    setIsConfiring(true)
+                    setTransactionHash(result.transactionHash)
+                }
             })
             .catch((error) => {
                 console.error('Error writing contract:', error)
@@ -248,26 +283,49 @@ export default function NewLink() {
                             /> */}
                         </div>
 
-                        <ShimmerButton
-                            borderRadius="15px"
-                            className="mt-10 h-12 pr-2 pl-8 text-lg overflow-hidden hover:scale-105 transition duration-300 ease-in-out flex items-center justify-center"
-                            shimmerColor="#f15946"
-                            shimmerSize="0.2em"
-                            background="#2d92ad"
-                            type="submit"
-                            disabled={
-                                !userAddress || form.formState.isSubmitting
-                            }
-                        >
-                            Create!
-                            <Image
-                                src="/glasses/glasses-square-pink-purple-multi.png"
-                                alt="nouns-glasses"
-                                width={250} // Increase the width
-                                height={250} // Increase the height
-                                className="w-24 h-24 p-0  pt-3" // Adjust the className to match the new size
-                            />
-                        </ShimmerButton>
+                        {!isConfirming ? (
+                            <ShimmerButton
+                                borderRadius="15px"
+                                className="mt-10 h-12 pr-2 pl-8 text-lg overflow-hidden hover:scale-105 transition duration-300 ease-in-out flex items-center justify-center"
+                                shimmerColor="#f15946"
+                                shimmerSize="0.2em"
+                                background="#2d92ad"
+                                type="submit"
+                                disabled={
+                                    !userAddress || form.formState.isSubmitting
+                                }
+                            >
+                                Create!
+                                <Image
+                                    src="/glasses/glasses-square-pink-purple-multi.png"
+                                    alt="nouns-glasses"
+                                    width={250} // Increase the width
+                                    height={250} // Increase the height
+                                    className="w-24 h-24 p-0  pt-3" // Adjust the className to match the new size
+                                />
+                            </ShimmerButton>
+                        ) : (
+                            <div className="flex items-center justify-center max-w-md border mt-8 animate-pulse bg-custom-green-300 px-4 py-2 rounded-md">
+                                {isConfirming ? (
+                                    <span>
+                                        Your link is being created wait until
+                                        the transaction is confirmed...
+                                    </span>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(
+                                                fundraisingLink as string
+                                            )
+                                            alert('Link copied to clipboard!')
+                                        }}
+                                        className="bg-custom-blue-500 text-white px-4 py-2 rounded-md"
+                                    >
+                                        Copy Link to Share
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </form>
                 </Form>
             </div>
