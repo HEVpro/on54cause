@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider'
-import { Web3AuthNoModal } from '@web3auth/no-modal'
 import { ADAPTER_EVENTS, IProvider, WEB3AUTH_NETWORK } from '@web3auth/base'
-import { useRouter } from 'next/navigation'
 import { clientId, chainConfig, verifier } from '@/lib/constants'
 import { decodeToken, Web3Auth } from '@web3auth/single-factor-auth'
 import { PasskeysPlugin } from '@web3auth/passkeys-sfa-plugin'
 import { WalletServicesPlugin } from '@web3auth/wallet-services-plugin'
-import { CredentialResponse, googleLogout } from '@react-oauth/google'
+import { CredentialResponse } from '@react-oauth/google'
 import { shouldSupportPasskey } from '../utils'
 
 export const useWeb3AuthSingleAuthProvider = () => {
@@ -18,7 +16,6 @@ export const useWeb3AuthSingleAuthProvider = () => {
     const [pkPlugin, setPkPlugin] = useState<PasskeysPlugin | null>(null)
     const [wsPlugin, setWsPlugin] = useState<WalletServicesPlugin | null>(null)
     const [isLoggingIn, setIsLoggingIn] = useState(false)
-    const router = useRouter()
 
     function uiConsole(...args: any[]): void {
         const el = document.querySelector('#console>p')
@@ -152,15 +149,6 @@ export const useWeb3AuthSingleAuthProvider = () => {
             return
         }
         await web3authSFAuth.logout()
-    }
-
-    const switchChain = async () => {
-        try {
-            await web3authSFAuth?.switchChain({ chainId: '0x13882' })
-            uiConsole('Chain switched to Polygon Amoy Testnet successfully')
-        } catch (err) {
-            uiConsole(err)
-        }
     }
 
     const registerPasskey = async () => {
