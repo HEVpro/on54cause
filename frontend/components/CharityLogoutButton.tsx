@@ -3,9 +3,10 @@
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import Image from 'next/image'
 import ShimmerButton from './ui/shimmer-button'
+import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
 
-export default function LogoutButton() {
-    const { logout, setLoggedIn, setProvider } = useWeb3AuthNoModalProvider()
+export default function CharityLogoutButton() {
+    const { logoutPassKeys } = useWeb3AuthSingleAuthProvider()
 
     return (
         <ShimmerButton
@@ -15,9 +16,7 @@ export default function LogoutButton() {
             shimmerSize="0.2em"
             background="#e01a4f"
             onClick={async () => {
-                await logout()
-                setLoggedIn(false)
-                setProvider(null)
+                await logoutPassKeys()
             }}
         >
             <p className="pt-0.5 translate-x-6">Logout</p>

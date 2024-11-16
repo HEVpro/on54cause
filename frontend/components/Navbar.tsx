@@ -5,12 +5,16 @@ import Link from 'next/link'
 import ShimmerButton from './ui/shimmer-button'
 import { usePathname } from 'next/navigation'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
-import LogoutButton from './LogoutButton'
+import IndividualLogoutButton from './IndividualLogoutButton'
+import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
+import CharityLogoutButton from './CharityLogoutButton'
 
 export default function Navbar() {
     const pathname = usePathname()
     const { loggedIn } = useWeb3AuthNoModalProvider()
+    const { isLoggingIn } = useWeb3AuthSingleAuthProvider()
 
+    const allowedPaths = ['/', '/events']
     return (
         <div className="flex h-16 w-full bg-white/70 z-[9999] items-center justify-between backdrop-blur-md px-4 py-2 mx-auto sticky top-0">
             <Link href={'/'} className="flex items-center gap-4">
@@ -23,7 +27,7 @@ export default function Navbar() {
                 />
                 <p className="text-2xl font-bold">On54Cause</p>
             </Link>
-            {pathname === '/' && !loggedIn && (
+            {allowedPaths.includes(pathname) && !loggedIn && (
                 <div className="w-fit flex items-center gap-4">
                     <p className="text-lg pt-4 text-custom-green-500">
                         Already registerd?
@@ -49,7 +53,8 @@ export default function Navbar() {
                     </Link>
                 </div>
             )}
-            {loggedIn && <LogoutButton />}
+            {loggedIn && <IndividualLogoutButton />}
+            {isLoggingIn && <CharityLogoutButton />}
         </div>
     )
 }

@@ -5,7 +5,6 @@ import { IProvider, WALLET_ADAPTERS } from '@web3auth/base'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { log } from 'console'
 
 export default function IndividualOnboarding() {
     const searchParams = useSearchParams()
