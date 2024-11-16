@@ -1,4 +1,3 @@
-import fs from 'fs'
 import FormData from 'form-data'
 
 const API_BASE_URL = 'http://localhost:8000'
@@ -28,17 +27,16 @@ async function apiRequest(method: any, endpoint: any, data = null) {
     }
 }
 
-export async function uploadFile(bucketName: string, filePath: string) {
-    const form = new FormData()
-    form.append('file', fs.createReadStream(filePath))
-
+export async function uploadFile(bucketName: string, jsonData: object) {
     try {
         const response = await fetch(
-            `${API_BASE_URL}/buckets/${bucketName}/files`,
+            `${API_BASE_URL}/buckets/${bucketName}/data`,
             {
                 method: 'POST',
-                headers: form.getHeaders(),
-                body: form as unknown as BodyInit,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData),
             }
         )
 
