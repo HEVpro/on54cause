@@ -106,14 +106,14 @@ export default function Navbar() {
                     <>
                         {!userType && allowedPaths.includes(pathname) && (
                             <div className="w-fit flex items-center gap-4">
-                                <p className="text-lg pt-4 text-custom-green-500">
+                                <p className="max-md:hidden text-lg pt-4 text-custom-green-500">
                                     Already registered?
                                 </p>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger>
                                         <ShimmerButton
                                             borderRadius="15px"
-                                            className="mt-4 h-12 pr-2 text-lg overflow-hidden hover:scale-105 transition duration-300 ease-in-out flex items-center justify-center"
+                                            className="mt-4 h-12 max-w-32 pr-2 text-lg overflow-hidden hover:scale-105 transition duration-300 ease-in-out flex items-center justify-center"
                                             shimmerColor="#53b3cb"
                                             shimmerSize="0.2em"
                                             background="#f97f70"

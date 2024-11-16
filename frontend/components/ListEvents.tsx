@@ -3,7 +3,7 @@ import { EventCard } from '@/components/EventCard'
 import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CalendarIcon, XIcon } from 'lucide-react'
+import { CalendarIcon, PlusIcon, XIcon } from 'lucide-react'
 import {
     Popover,
     PopoverTrigger,
@@ -20,6 +20,12 @@ import { useReadContract, useReadContracts, useChainId } from 'wagmi'
 import { abi } from '@/lib/wagmi/abi'
 import contracts from '@/lib/wagmi/contracts.json'
 import { Abi } from 'viem'
+import { TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
+import { Tooltip } from '@radix-ui/react-tooltip'
+import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
+import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 type EventData = {
     id: string
@@ -32,6 +38,9 @@ type EventData = {
     fundraisings: string[]
 }
 export default function ListEvents() {
+    const pathname = usePathname()
+    const router = useRouter()
+
     const [name, setName] = useQueryState('name')
     const [charity, setCharity] = useQueryState('charity')
     const [date, setDate] = useQueryState('date', parseAsIsoDate)
@@ -40,6 +49,18 @@ export default function ListEvents() {
     const [debouncedName] = useDebounce(name, 500)
     const [debouncedCharity] = useDebounce(charity, 500)
     const [debouncedDate] = useDebounce(date, 500)
+
+    const [userType, setUserType] = useState<string | null>(null)
+    const { isLoggingIn } = useWeb3AuthSingleAuthProvider()
+    const { loggedIn } = useWeb3AuthNoModalProvider()
+
+    useEffect(() => {
+        const userTypeValue = localStorage.getItem('user_type')
+        if (userTypeValue) {
+            setUserType(userTypeValue)
+        }
+
+    }, [loggedIn, isLoggingIn, pathname])
 
     const mockEvents = [
         {
@@ -126,9 +147,9 @@ export default function ListEvents() {
         <>
             <div
                 className={cn(
-                    'w-full flex-wrap gap-4 py-7 px-4 grid grid-cols-4 align-bottom items-end'
+                    'w-full flex-wrap gap-4 py-7 px-4 grid grid-cols-4 align-bottom items-end',
                     //TODO: if charity create event
-                    // usertType === 'charity' ? 'grid-cols-4' : 'grid-cols-3'
+                    userType === 'charity' ? 'grid-cols-4' : 'grid-cols-3'
                 )}
             >
                 <div className="w-full col-span-1 flex flex-col gap-2">
@@ -187,9 +208,22 @@ export default function ListEvents() {
                     </div>
                 </div>
                 {/* TODO: if userType is 'charity */}
-                <div className="col-span-1 w-full">
-                    <Button className="w-full">Create Event</Button>
-                </div>
+                {userType === 'charity' && (
+                    <div className="col-span-1 w-fit ml-auto rounded-xl">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Button onClick={() => router.push('/createevent')} className="w-full">
+                                        <PlusIcon className=" text-white" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-black m-1 p-2  text-white rounded-md">
+                                    <p>Create Event</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                )}
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 p-4">
                 {events?.map((event, index) => (

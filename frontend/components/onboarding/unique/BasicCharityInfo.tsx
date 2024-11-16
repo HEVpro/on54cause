@@ -71,13 +71,13 @@ export default function BasicCharityInfo() {
                 animate={{ x: 0 }}
                 exit={{ x: '50%' }}
                 transition={{ duration: 0.5, ease: 'linear' }}
-                className="z-50 w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10  rounded-xl"
+                className="md:z-50 w-full md:w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center md:justify-end gap-10 p-10 bg-white rounded-xl"
             >
-                <p className="text-2xl">
+                <p className="max-md:hidden text-3xl text-custom-red-500">
                     Tell us a bit about your charity so we can get you set up!
                 </p>
                 <Image
-                    className="mt-auto"
+                    className="max-md:opacity-30"
                     src="/nouns/noun-2.png"
                     alt="step1"
                     width={600}
@@ -90,7 +90,7 @@ export default function BasicCharityInfo() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: '-50%' }}
                 transition={{ duration: 0.5, ease: 'linear' }}
-                className="z-0 w-1/2 h-[calc(100vh-4rem)] absolute left-1/2 flex-1 flex flex-col justify-center items-center gap-4"
+                className="md:z-0 w-full md:w-1/2 h-[calc(100vh-4rem)] absolute left-0 md:left-1/2 flex-1 flex flex-col justify-center items-center gap-4"
             >
                 <p className="text-center text-2xl">
                     Let's start getting to know each other with a few basic

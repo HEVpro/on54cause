@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { get } from 'http'
+import { motion } from 'framer-motion'
 
 export default function IndividualOnboarding() {
     const searchParams = useSearchParams()
@@ -35,10 +36,41 @@ export default function IndividualOnboarding() {
     }, [])
 
     return (
-        <div className="w-full flex items-center justify-between px-8">
+        <>
             {/* TODO: Add image left */}
-            <div className="w-1/2"></div>
-            <div className="w-1/2 flex flex-col items-center justify-center gap-4 min-h-screen">
+            <motion.div
+                key="step1-header"
+                initial={{ x: '50%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '50%' }}
+                transition={{ duration: 0.5, ease: 'linear' }}
+                className="md:z-50 w-full md:w-1/2  absolute mx-auto min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center md:justify-end gap-10 p-10 bg-white rounded-xl"
+            >
+                <p className="max-md:hidden text-3xl text-custom-yellow-500">
+                    Join events
+                </p>
+                <p className="max-md:hidden text-3xl text-custom-orange-500">
+                    Give Back
+                </p>
+                <p className="max-md:hidden text-3xl text-custom-red-500">
+                    Create Impact
+                </p>
+                <Image
+                    className="max-md:opacity-30"
+                    src="/nouns/noun-2.png"
+                    alt="step1"
+                    width={600}
+                    height={600}
+                />
+            </motion.div>
+            <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: '-50%' }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: '-50%' }}
+                transition={{ duration: 0.5, ease: 'linear' }}
+                className="md:z-0 w-full md:w-1/2 h-[calc(100vh-4rem)] absolute left-0 md:left-1/2 flex-1 flex flex-col justify-center items-center gap-4"
+            >
                 {!loggedIn && !isBeingRedirected && !isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 w-full">
                         <h1 className="text-4xl text-custom-green-500">
@@ -65,13 +97,13 @@ export default function IndividualOnboarding() {
                         </Button>
                     </div>
                 ) : isLoading ? (
-                    <p>
+                    <p className="text-lg">
                         You are logged in, we are transferring you to events...
                     </p>
                 ) : (
-                    <p>You are being redirected...</p>
+                    <p className="text-lg">You are being redirected...</p>
                 )}
-            </div>
-        </div>
+            </motion.div>
+        </>
     )
 }

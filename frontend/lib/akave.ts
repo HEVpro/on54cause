@@ -38,7 +38,7 @@ export async function uploadFile(bucketName: string, filePath: string) {
             {
                 method: 'POST',
                 headers: form.getHeaders(),
-                body: form as unknown as string,
+                body: form as unknown as BodyInit,
             }
         )
 

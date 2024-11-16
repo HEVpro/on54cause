@@ -36,7 +36,7 @@ export default function OnBoarding() {
                     animate={{ opacity: 1, x: "0%" }}
                     exit={{ opacity: 0, x: "-50%" }}
                     transition={{ duration: 0.5, ease: "linear" }}
-                    className="z-50 absolute left-1/2 w-1/2 min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 bg-[#D4D7E1] rounded-xl">
+                    className="z-50 absolute left-1/2 w-1/2 min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-10 bg-white rounded-xl">
                     {/* <p className="">Let&apos;s get started! Are you joining as an individual or a charity? Select the option that fits you best.</p> */}
                     <Image className="mt-auto" src="/nouns/noun-2.png" alt="step1" width={600} height={600} />
                 </motion.div>
