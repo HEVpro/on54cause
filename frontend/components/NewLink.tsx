@@ -22,7 +22,6 @@ import ShimmerButton from './ui/shimmer-button'
 import { parseUnits, stringToHex } from 'viem'
 import { abi } from '@/lib/wagmi/abi'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
-import { useChainId } from 'wagmi'
 
 export default function NewLink() {
     const searchParams = useSearchParams()
@@ -54,9 +53,6 @@ export default function NewLink() {
             minimumAmount: 0, // Default to 0 as it should be a number.
         },
     })
-
-    const chain = useChainId()
-    console.log('chain -->', chain)
 
     function onSubmit(data: z.infer<typeof FormSchema>, event: any) {
         event.preventDefault()

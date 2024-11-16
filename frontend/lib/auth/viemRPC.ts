@@ -12,14 +12,12 @@ const getViewChain = (provider: IProvider) => {
     switch (provider.chainId) {
         case '88882':
             return spicy
-        case '1':
-            return mainnet
         case '0x13882':
         case '80002':
             return polygonAmoy
         case '0xaa36a7':
         default:
-            return polygonAmoy
+            return spicy
     }
 }
 
@@ -176,6 +174,33 @@ const writeContract = async (
     }
 }
 
+const readContract = async (
+    provider: IProvider,
+    contractABI: any,
+    contractAddress: string,
+    functionName: string,
+    functionArgs: any[]
+) => {
+    try {
+        const publicClient = createPublicClient({
+            chain: getViewChain(provider),
+            transport: custom(provider),
+        })
+
+        const number = await publicClient.readContract({
+            address: contractAddress as `0x${string}`,
+            abi: contractABI,
+            functionName: functionName,
+            args: functionArgs,
+        })
+
+        // Assuming `toObject` is a utility to process the number
+        return number // Call a function like `toObject(number)` if needed
+    } catch (error) {
+        return error
+    }
+}
+
 export default {
     getChainId,
     getAccounts,
@@ -183,4 +208,5 @@ export default {
     sendTransaction,
     signMessage,
     writeContract,
+    readContract,
 }

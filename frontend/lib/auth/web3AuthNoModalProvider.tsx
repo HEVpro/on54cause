@@ -15,6 +15,7 @@ import { getPublicCompressed } from '@toruslabs/eccrypto'
 import { clientId, chainConfig } from '@/lib/constants'
 import RPC from './viemRPC' // for using viem
 import { AbiItem } from 'viem'
+import { readContract } from 'viem/actions'
 
 export const useWeb3AuthNoModalProvider = () => {
     const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null)
@@ -71,6 +72,32 @@ export const useWeb3AuthNoModalProvider = () => {
             return receipt
         } catch (error) {
             console.error('Error writing contract:', error)
+            return error
+        }
+    }
+
+    const readFromContract = async (
+        abi: AbiItem[],
+        address: string,
+        functionName: string,
+        functionArgs: any[]
+    ) => {
+        if (!provider) {
+            uiConsole('provider not initialized yet')
+            return
+        }
+        try {
+            const result = await RPC.readContract(
+                provider,
+                abi,
+                address,
+                functionName,
+                functionArgs
+            )
+            console.log('Contract Result:', result)
+            return result
+        } catch (error) {
+            console.error('Error reading contract:', error)
             return error
         }
     }
@@ -222,5 +249,6 @@ export const useWeb3AuthNoModalProvider = () => {
         getUserInfo,
         userAddress,
         writeContract,
+        readContract,
     }
 }
