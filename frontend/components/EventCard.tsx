@@ -126,7 +126,7 @@ export function EventCard({
 
             <CardTitle className="flex items-center gap-2 w-full">
                 <Avatar className="border-2 border-custom-orange-400">
-                    <AvatarImage src={data?.image_url} alt={data?.title} />
+                    <AvatarImage src={data?.imgUrl} alt={data?.title} />
                     <AvatarFallback className="text-sm ">o54</AvatarFallback>
                 </Avatar>
                 <p className="truncate line-clamp-1">{data?.title}</p>
