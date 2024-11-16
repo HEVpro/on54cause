@@ -104,7 +104,7 @@ contract On54Cause is Ownable {
         string memory _title,
         string memory _description,
         string memory _imgUrl
-    ) public {
+    ) public returns (bytes32) {
         require(_date > block.timestamp, "Event date is in the past");
         require(bytes(_title).length > 0, "Title cannot be empty");
         require(bytes(_description).length > 0, "Description cannot be empty");
@@ -122,6 +122,7 @@ contract On54Cause is Ownable {
         });
         events[_id] = _event;
         emit EventCreated(_id, _title, _description, msg.sender);
+        return _id;
     }
 
     function getEvent(bytes32 _id) public view returns (Event memory) {
@@ -218,7 +219,7 @@ contract On54Cause is Ownable {
         bytes32 _associatedEvent,
         address _beneficiary,
         address _charity
-    ) public {
+    ) public returns (bytes32) {
         require(
             events[_associatedEvent].status == Status.OPEN,
             "Event is not open"
@@ -248,6 +249,7 @@ contract On54Cause is Ownable {
             Status.OPEN,
             _associatedEvent
         );
+        return _fundraisingId;
     }
 
     function getFundraising(
