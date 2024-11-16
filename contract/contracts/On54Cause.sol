@@ -181,6 +181,23 @@ contract On54Cause is Ownable {
         return tokenRaised;
     }
 
+    function getFundraisingTokensRaised(
+        bytes32 _fundraisingId,
+        IERC20[] memory _tokens
+    ) public view returns (TokenRaised[] memory) {
+        TokenRaised[] memory tokenRaised = new TokenRaised[](_tokens.length);
+        require(
+            fundraisings[_fundraisingId].targetAmount > 0,
+            "Fundraising does not exist"
+        );
+
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            uint256 amount = fundraisings[_fundraisingId].donations[_tokens[i]];
+            tokenRaised[i] = TokenRaised(_tokens[i], amount);
+        }
+        return tokenRaised;
+    }
+
     function completeEvent(bytes32 _event, IERC20[] memory _tokens) public {
         require(
             msg.sender == events[_event].organiser,
