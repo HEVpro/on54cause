@@ -20,7 +20,11 @@ import { useReadContract, useReadContracts, useChainId } from 'wagmi'
 import { abi } from '@/lib/wagmi/abi'
 import contracts from '@/lib/wagmi/contracts.json'
 import { Abi } from 'viem'
-import { TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
+import {
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@radix-ui/react-tooltip'
 import { Tooltip } from '@radix-ui/react-tooltip'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
@@ -46,9 +50,9 @@ export default function ListEvents() {
     const [date, setDate] = useQueryState('date', parseAsIsoDate)
     const [events, setEvents] = useState<EventData[]>([])
 
-    const [debouncedName] = useDebounce(name, 500)
-    const [debouncedCharity] = useDebounce(charity, 500)
-    const [debouncedDate] = useDebounce(date, 500)
+    const [debouncedName] = useDebounce(name, 300)
+    const [debouncedCharity] = useDebounce(charity, 300)
+    const [debouncedDate] = useDebounce(date, 300)
 
     const [userType, setUserType] = useState<string | null>(null)
     const { isLoggingIn } = useWeb3AuthSingleAuthProvider()
@@ -59,7 +63,6 @@ export default function ListEvents() {
         if (userTypeValue) {
             setUserType(userTypeValue)
         }
-
     }, [loggedIn, isLoggingIn, pathname])
 
     const mockEvents = [
@@ -68,12 +71,12 @@ export default function ListEvents() {
             id: 'FAD1B407A85421DFCF42EBC67C0F19E428753E46BF9E35BAD1A325B1301BB26F',
         },
     ]
-    const mappedEvents = mockEvents.map((event) => ({
-        abi: abi as Abi, // Cast abi to the correct type
-        address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6' as `0x${string}`,
-        args: [event.id],
-        functionName: 'getEvent',
-    }))
+    // const mappedEvents = mockEvents.map((event) => ({
+    //     abi: abi as Abi, // Cast abi to the correct type
+    //     address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6' as `0x${string}`,
+    //     args: [event.id],
+    //     functionName: 'getEvent',
+    // }))
 
     // const { data } = useReadContracts({
     //     contracts: [{
@@ -84,18 +87,80 @@ export default function ListEvents() {
     //     }],
     // })
 
-    const data = [{
-        id: 'some-id', // Add a unique id
-        organiser: 'some-organiser', // Add an organiser
-        title: 'Test Event',
-        description: 'TestTest description for an amazing sports charity event',
-        date: 1716000000,
-        charity: 'Test Charity',
-        imgUrl: 'https://via.placeholder.com/150',
-        status: 1,
-        fundraisings: ['1', '2', '3'],
-    }]
-
+    const data = [
+        {
+            id: '1231123-id',
+            organiser: 'Save the Children',
+            title: 'Run for Children 5K',
+            description:
+                'Participate in our 5K run to support children in need. Purchase a ticket to join and help sponsor the event.',
+            date: 1716000000,
+            charity: 'Save the Children',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['1', '2', '3'],
+        },
+        {
+            id: '4817921-id',
+            organiser: 'Red Cross',
+            title: 'Annual Blood Run',
+            description:
+                'Join our Annual Blood Run event to raise funds for blood donation awareness. Ticket purchases go towards sponsoring the cause.',
+            date: 1716000500,
+            charity: 'Red Cross',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['4', '5', '6'],
+        },
+        {
+            id: '8347292-id',
+            organiser: 'Greenpeace',
+            title: 'Eco Marathon',
+            description:
+                'Participate in the Eco Marathon to promote environmental conservation. Buy a ticket and sponsor a tree!',
+            date: 1716001000,
+            charity: 'Greenpeace',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['7', '8', '9'],
+        },
+        {
+            id: '5923842-id',
+            organiser: 'UNICEF',
+            title: 'EduTech Conference',
+            description:
+                'Attend the EduTech Conference to explore innovative educational technologies. Ticket sales sponsor educational programs globally.',
+            date: 1716001500,
+            charity: 'UNICEF',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['10', '11', '12'],
+        },
+        {
+            id: '7691834-id',
+            organiser: 'Doctors Without Borders',
+            title: 'Global Health Summit',
+            description:
+                'Join the Global Health Summit to discuss healthcare innovations. Ticket proceeds go to supporting medical missions.',
+            date: 1716002000,
+            charity: 'Doctors Without Borders',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['13', '14', '15'],
+        },
+        {
+            id: '9812374-id',
+            organiser: 'WWF',
+            title: 'Wildlife Charity Ball',
+            description:
+                'Attend the Wildlife Charity Ball, an elegant evening to support wildlife preservation. Tickets and sponsorships available.',
+            date: 1716002500,
+            charity: 'WWF',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['16', '17', '18'],
+        },
+    ]
 
     // useEffect(() => {
     //     if (data) {
@@ -106,7 +171,7 @@ export default function ListEvents() {
     //         setEvents(formattedEvents as any[])
     //     }
     // }, [data])
-    console.log('events', data)
+    // console.log('events', data)
 
     const colors = [
         { class: 'border-custom-green-500', code: '#132b3910' },
@@ -150,7 +215,7 @@ export default function ListEvents() {
                 return (
                     debouncedDate &&
                     format(event.date, 'yyyy-MM-dd') >=
-                    format(debouncedDate, 'yyyy-MM-dd')
+                        format(debouncedDate, 'yyyy-MM-dd')
                 )
             })
             setEvents(filteredEvents)
@@ -167,7 +232,6 @@ export default function ListEvents() {
             <div
                 className={cn(
                     'w-full flex-wrap gap-4 py-7 px-4 grid grid-cols-4 align-bottom items-end',
-                    //TODO: if charity create event
                     userType === 'charity' ? 'grid-cols-4' : 'grid-cols-3'
                 )}
             >
@@ -179,7 +243,6 @@ export default function ListEvents() {
                         className=" w-full focus:outline-none focus:ring-0 focus:border-none"
                     />
                 </div>
-                {/* TODO: use when fetch and mapp the json events */}
                 <div className="w-full col-span-1 flex flex-col gap-2">
                     <Label>Charity Name</Label>
                     <Input
@@ -226,21 +289,14 @@ export default function ListEvents() {
                         </button>
                     </div>
                 </div>
-                {/* TODO: if userType is 'charity */}
                 {userType === 'charity' && (
-                    <div className="col-span-1 w-fit ml-auto rounded-xl">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Button onClick={() => router.push('/createevent')} className="w-full">
-                                        <PlusIcon className=" text-white" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-black m-1 p-2  text-white rounded-md">
-                                    <p>Create Event</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                    <div className="col-span-1 w-full ml-auto rounded-xl ">
+                        <Button
+                            onClick={() => router.push('/createevent')}
+                            className="w-full"
+                        >
+                            Create event
+                        </Button>
                     </div>
                 )}
             </div>
