@@ -50,9 +50,9 @@ export default function ListEvents() {
     const [date, setDate] = useQueryState('date', parseAsIsoDate)
     const [events, setEvents] = useState<EventData[]>([])
 
-    const [debouncedName] = useDebounce(name, 500)
-    const [debouncedCharity] = useDebounce(charity, 500)
-    const [debouncedDate] = useDebounce(date, 500)
+    const [debouncedName] = useDebounce(name, 300)
+    const [debouncedCharity] = useDebounce(charity, 300)
+    const [debouncedDate] = useDebounce(date, 300)
 
     const [userType, setUserType] = useState<string | null>(null)
     const { isLoggingIn } = useWeb3AuthSingleAuthProvider()
@@ -71,12 +71,12 @@ export default function ListEvents() {
             id: 'FAD1B407A85421DFCF42EBC67C0F19E428753E46BF9E35BAD1A325B1301BB26F',
         },
     ]
-    const mappedEvents = mockEvents.map((event) => ({
-        abi: abi as Abi, // Cast abi to the correct type
-        address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6' as `0x${string}`,
-        args: [event.id],
-        functionName: 'getEvent',
-    }))
+    // const mappedEvents = mockEvents.map((event) => ({
+    //     abi: abi as Abi, // Cast abi to the correct type
+    //     address: '0xa4Bb9cee0fb14865B83245b403a6036049e3a9A6' as `0x${string}`,
+    //     args: [event.id],
+    //     functionName: 'getEvent',
+    // }))
 
     // const { data } = useReadContracts({
     //     contracts: [{
@@ -89,16 +89,76 @@ export default function ListEvents() {
 
     const data = [
         {
-            id: '1231123-id', // Add a unique id
-            organiser: 'Save the Children', // Add an organiser
-            title: 'Save the children running',
+            id: '1231123-id',
+            organiser: 'Save the Children',
+            title: 'Run for Children 5K',
             description:
-                'Welcome to our running day! We are running for our children and we need your help to make it happen. Join us and help us make a difference!',
+                'Participate in our 5K run to support children in need. Purchase a ticket to join and help sponsor the event.',
             date: 1716000000,
-            charity: 'Test Charity',
+            charity: 'Save the Children',
             imgUrl: '',
             status: 1,
             fundraisings: ['1', '2', '3'],
+        },
+        {
+            id: '4817921-id',
+            organiser: 'Red Cross',
+            title: 'Annual Blood Run',
+            description:
+                'Join our Annual Blood Run event to raise funds for blood donation awareness. Ticket purchases go towards sponsoring the cause.',
+            date: 1716000500,
+            charity: 'Red Cross',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['4', '5', '6'],
+        },
+        {
+            id: '8347292-id',
+            organiser: 'Greenpeace',
+            title: 'Eco Marathon',
+            description:
+                'Participate in the Eco Marathon to promote environmental conservation. Buy a ticket and sponsor a tree!',
+            date: 1716001000,
+            charity: 'Greenpeace',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['7', '8', '9'],
+        },
+        {
+            id: '5923842-id',
+            organiser: 'UNICEF',
+            title: 'EduTech Conference',
+            description:
+                'Attend the EduTech Conference to explore innovative educational technologies. Ticket sales sponsor educational programs globally.',
+            date: 1716001500,
+            charity: 'UNICEF',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['10', '11', '12'],
+        },
+        {
+            id: '7691834-id',
+            organiser: 'Doctors Without Borders',
+            title: 'Global Health Summit',
+            description:
+                'Join the Global Health Summit to discuss healthcare innovations. Ticket proceeds go to supporting medical missions.',
+            date: 1716002000,
+            charity: 'Doctors Without Borders',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['13', '14', '15'],
+        },
+        {
+            id: '9812374-id',
+            organiser: 'WWF',
+            title: 'Wildlife Charity Ball',
+            description:
+                'Attend the Wildlife Charity Ball, an elegant evening to support wildlife preservation. Tickets and sponsorships available.',
+            date: 1716002500,
+            charity: 'WWF',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['16', '17', '18'],
         },
     ]
 
@@ -111,7 +171,7 @@ export default function ListEvents() {
     //         setEvents(formattedEvents as any[])
     //     }
     // }, [data])
-    console.log('events', data)
+    // console.log('events', data)
 
     const colors = [
         { class: 'border-custom-green-500', code: '#132b3910' },
