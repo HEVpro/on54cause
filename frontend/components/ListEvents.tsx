@@ -20,7 +20,11 @@ import { useReadContract, useReadContracts, useChainId } from 'wagmi'
 import { abi } from '@/lib/wagmi/abi'
 import contracts from '@/lib/wagmi/contracts.json'
 import { Abi } from 'viem'
-import { TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
+import {
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@radix-ui/react-tooltip'
 import { Tooltip } from '@radix-ui/react-tooltip'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
 import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
@@ -59,7 +63,6 @@ export default function ListEvents() {
         if (userTypeValue) {
             setUserType(userTypeValue)
         }
-
     }, [loggedIn, isLoggingIn, pathname])
 
     const mockEvents = [
@@ -84,18 +87,20 @@ export default function ListEvents() {
     //     }],
     // })
 
-    const data = [{
-        id: 'some-id', // Add a unique id
-        organiser: 'some-organiser', // Add an organiser
-        title: 'Test Event',
-        description: 'TestTest description for an amazing sports charity event',
-        date: 1716000000,
-        charity: 'Test Charity',
-        imgUrl: 'https://via.placeholder.com/150',
-        status: 1,
-        fundraisings: ['1', '2', '3'],
-    }]
-
+    const data = [
+        {
+            id: '1231123-id', // Add a unique id
+            organiser: 'Save the Children', // Add an organiser
+            title: 'Save the children running',
+            description:
+                'Welcome to our running day! We are running for our children and we need your help to make it happen. Join us and help us make a difference!',
+            date: 1716000000,
+            charity: 'Test Charity',
+            imgUrl: '',
+            status: 1,
+            fundraisings: ['1', '2', '3'],
+        },
+    ]
 
     // useEffect(() => {
     //     if (data) {
@@ -150,7 +155,7 @@ export default function ListEvents() {
                 return (
                     debouncedDate &&
                     format(event.date, 'yyyy-MM-dd') >=
-                    format(debouncedDate, 'yyyy-MM-dd')
+                        format(debouncedDate, 'yyyy-MM-dd')
                 )
             })
             setEvents(filteredEvents)
@@ -167,7 +172,6 @@ export default function ListEvents() {
             <div
                 className={cn(
                     'w-full flex-wrap gap-4 py-7 px-4 grid grid-cols-4 align-bottom items-end',
-                    //TODO: if charity create event
                     userType === 'charity' ? 'grid-cols-4' : 'grid-cols-3'
                 )}
             >
@@ -179,7 +183,6 @@ export default function ListEvents() {
                         className=" w-full focus:outline-none focus:ring-0 focus:border-none"
                     />
                 </div>
-                {/* TODO: use when fetch and mapp the json events */}
                 <div className="w-full col-span-1 flex flex-col gap-2">
                     <Label>Charity Name</Label>
                     <Input
@@ -226,21 +229,14 @@ export default function ListEvents() {
                         </button>
                     </div>
                 </div>
-                {/* TODO: if userType is 'charity */}
                 {userType === 'charity' && (
-                    <div className="col-span-1 w-fit ml-auto rounded-xl">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Button onClick={() => router.push('/createevent')} className="w-full">
-                                        <PlusIcon className=" text-white" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-black m-1 p-2  text-white rounded-md">
-                                    <p>Create Event</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                    <div className="col-span-1 w-full ml-auto rounded-xl ">
+                        <Button
+                            onClick={() => router.push('/createevent')}
+                            className="w-full"
+                        >
+                            Create event
+                        </Button>
                     </div>
                 )}
             </div>

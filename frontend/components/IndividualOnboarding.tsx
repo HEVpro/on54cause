@@ -37,7 +37,6 @@ export default function IndividualOnboarding() {
 
     return (
         <>
-            {/* TODO: Add image left */}
             <motion.div
                 key="step1-header"
                 initial={{ x: '50%' }}
