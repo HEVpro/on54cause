@@ -22,24 +22,57 @@ import ShimmerButton from './ui/shimmer-button'
 import { parseUnits, stringToHex } from 'viem'
 import { abi } from '@/lib/wagmi/abi'
 import { useWeb3AuthNoModalProvider } from '@/lib/auth/web3AuthNoModalProvider'
-import { SelectTrigger, SelectValue, SelectContent, SelectItem, Select } from './ui/select'
+import { useWeb3AuthSingleAuthProvider } from '@/lib/auth/web3AuthSingleAuthProvider'
+import {
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+    Select,
+} from './ui/select'
+import { Button } from './ui/button'
+import { FilesIcon } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 export default function Donate() {
     const searchParams = useSearchParams()
     const eventId = searchParams.get('eventId')
-    const eventTitle = searchParams.get('eventTitle')
+    const eventTitle = 'Save the Children for run'
+    const userRaiser = '0x3C84fca6d03440FA6CAf2A8c08F21c019006c394'
     const eventDescription = searchParams.get('description')
-    const eventDate = searchParams.get('date')
+    const eventDate = 1734390155
     const organizer = searchParams.get('organizer')
-    const imgUrl = searchParams.get('imgUrl')
-    const { userAddress, writeContract } = useWeb3AuthNoModalProvider()
+    const { userAddress, writeContract, loggedIn } =
+        useWeb3AuthNoModalProvider()
+    const { toast } = useToast()
+    const { showCheckout, connectPlugin, isLoggingIn } =
+        useWeb3AuthSingleAuthProvider()
+
+    const [session, setSession] = useState<string | null>(null)
+
+    useEffect(() => {
+        const authStoreIndividual = localStorage.getItem('auth_store')
+        const authStoreCharity = localStorage.getItem('sfa_store_eip_core_kit')
+        if (authStoreIndividual) {
+            const store = JSON.parse(authStoreIndividual)
+            setSession(store.sessionId)
+            localStorage.removeItem('sfa_store_eip_core_kit')
+        }
+        if (authStoreCharity) {
+            const store = JSON.parse(authStoreCharity)
+            setSession(store.sessionId)
+            localStorage.removeItem('auth_store')
+        }
+    }, [loggedIn, isLoggingIn])
+
+    console.log('session', session)
 
     const formattedDate = eventDate
         ? new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        }).format(new Date(Number(eventDate) * 1000))
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+          }).format(new Date(Number(eventDate) * 1000))
         : 'Invalid Date'
 
     const FormSchema = z.object({
@@ -59,28 +92,25 @@ export default function Donate() {
 
     function onSubmit(data: z.infer<typeof FormSchema>, event: any) {
         event.preventDefault()
-        const { quantity } = data
+        const { quantity, tokenType } = data
         const formattedAmount = parseUnits(quantity.toString(), 18)
 
-        console.info('formattedAmount -->', formattedAmount)
-        console.info('eventId -->', eventId)
-        console.info('userAddress -->', userAddress)
-        console.info('organizer -->', organizer)
-        console.info('writing event...')
+        // Simulate a donation processing delay
+        setTimeout(() => {
+            // Show success toast after the wait
+            toast({
+                title: 'Donation successful',
+                description: 'Thank you for your generous donation!',
+                duration: 5000,
+            })
+        }, 5000) // Wait for 5 seconds
 
-        const contractAdress = '0x0172e3262B9f676BECC2a5cDc7e82ab9d6D3298F'
-        writeContract(abi as any, contractAdress, 'createFundraising', [
-            formattedAmount,
-            eventId,
-            userAddress,
-            organizer,
-        ])
-            .then((result) => {
-                console.info('writeContract result -->', result)
-            })
-            .catch((error) => {
-                console.error('Error writing contract:', error)
-            })
+        // Initial toast when starting the donation process
+        toast({
+            title: 'Donating...',
+            description: 'Please wait while we process your donation',
+            duration: 5000,
+        })
     }
     const cryptoTokens = [
         {
@@ -151,6 +181,28 @@ export default function Donate() {
                 Donate to the event
             </h1>
             <div className="flex flex-col items-center justify-center  w-full mt-10">
+                <h2>I'm trying to donate to this event</h2>
+                <div className="flex items-center justyfy-center gap-4">
+                    {userRaiser && (
+                        <p className="text-xl text-center mt-2">
+                            {userRaiser.slice(0, 6)}...{userRaiser.slice(-4)}
+                        </p>
+                    )}
+                    <Button
+                        variant={'outline'}
+                        onClick={() => {
+                            navigator.clipboard.writeText(userRaiser)
+                            toast({
+                                title: 'Copied to clipboard!',
+                            })
+                        }}
+                        className="ml-2 p-2  rounded-md"
+                    >
+                        <FilesIcon className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
+            <div className="flex flex-col items-center justify-center  w-full mt-10">
                 <h2>Event Details</h2>
                 <p className="text-3xl text-custom-green-500 text-center mt-2">
                     {eventTitle}
@@ -194,7 +246,8 @@ export default function Donate() {
                                             </div>
                                         </FormControl>
                                         <FormDescription>
-                                            This money will be used to fund the event
+                                            This money will be used to fund the
+                                            event
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -204,7 +257,7 @@ export default function Donate() {
                                 control={form.control}
                                 name="tokenType"
                                 render={({ field }) => (
-                                    <FormItem className="w-[100px]">
+                                    <FormItem className="w-[150px]">
                                         <FormLabel>Token</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
